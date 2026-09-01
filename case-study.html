@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Case study — Andrea Harter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@380..800&family=Geist+Mono:wght@450..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #fdfcfa;
+    --canvas-tint: #f8f6f1;
+    --ink: #201c29;
+    --ink-soft: #6b6478;
+    --line: #ece8e0;
+    --coral: #ff6943;
+    --coral-text: #c74a22;
+    --focus: #6b50f7;
+    --font-display: "Geist", system-ui, sans-serif;
+    --font-body: "Geist", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --canvas: #17141f;
+      --canvas-tint: #1c1826;
+      --ink: #f3f0ea;
+      --ink-soft: #a89fbb;
+      --line: #2c2738;
+      --coral: #ff7e52;
+      --coral-text: #ff8a5c;
+    }
+  }
+  :root[data-theme="dark"] {
+    --canvas: #17141f;
+    --canvas-tint: #1c1826;
+    --ink: #f3f0ea;
+    --ink-soft: #a89fbb;
+    --line: #2c2738;
+    --coral: #ff7e52;
+    --coral-text: #ff8a5c;
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+
+  header {
+    padding: 2.25rem clamp(1.25rem, 4vw, 3rem) 0;
+    max-width: 1180px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem clamp(1.25rem, 4vw, 3rem);
+  }
+
+  .gate {
+    max-width: 26rem;
+    width: 100%;
+    text-align: center;
+  }
+  .lock-badge {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--canvas-tint);
+    border-radius: 50%;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(1.4rem, 3vw, 1.7rem);
+    letter-spacing: -0.02em;
+    margin: 0 0 0.85rem;
+  }
+  .gate p {
+    font-size: 0.98rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0 0 2rem;
+  }
+
+  form.gate-form {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+  }
+  input[type="password"] {
+    flex: 1;
+    min-width: 0;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    padding: 0.85rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--canvas);
+    color: var(--ink);
+  }
+  input[type="password"]::placeholder { color: var(--ink-soft); }
+  button.unlock {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.01em;
+    background: var(--ink);
+    color: var(--canvas);
+    border: none;
+    padding: 0.85rem 1.4rem;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.2s ease;
+  }
+  button.unlock:hover { transform: translateY(-2px); }
+
+  .gate-note {
+    font-size: 0.85rem;
+    min-height: 1.2rem;
+    color: var(--coral-text);
+    margin: 0 0 1.75rem;
+  }
+
+  .gate-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+  .gate-links a {
+    text-decoration: none;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .gate-links a:hover { color: var(--coral-text); border-color: var(--coral-text); }
+
+  footer {
+    padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="wordmark" href="/">Andrea Harter</a>
+</header>
+
+<main>
+  <div class="gate">
+    <div class="lock-badge" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M7.5 10.8c-.3-4.4 1-8 4.7-7.9 3.6.1 4.6 3.7 4.3 8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <rect x="5.3" y="10.5" width="13.6" height="10" rx="2.4" transform="rotate(-0.6 12 15.5)" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M12 14.6v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>This case study is password protected</h1>
+    <p>
+      Full write-ups are being finalized. If you're hiring or reviewing my work, reach out
+      and I'll send access.
+    </p>
+    <form class="gate-form" id="gateForm">
+      <input type="password" id="gateInput" placeholder="Password" autocomplete="off">
+      <button type="submit" class="unlock">Unlock</button>
+    </form>
+    <p class="gate-note" id="gateNote"></p>
+    <div class="gate-links">
+      <a href="mailto:hello@example.com">Email me for access →</a>
+      <a href="/">← Back to portfolio</a>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 Andrea Harter. Built by hand, hosted on GitHub Pages.</footer>
+
+<script>
+  document.getElementById('gateForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    document.getElementById('gateNote').textContent = "Access isn't open yet, email me and I'll send it over.";
+  });
+</script>
+
+</body>
+</html>
