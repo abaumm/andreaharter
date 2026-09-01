@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab — Andrea Harter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@380..800&family=Geist+Mono:wght@450..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #fdfcfa;
+    --canvas-tint: #f8f6f1;
+    --ink: #201c29;
+    --ink-soft: #6b6478;
+    --line: #ece8e0;
+    --coral: #ff6943;
+    --coral-text: #c74a22;
+    --gold: #ffd23f;
+    --violet: #6b50f7;
+    --teal: #14d9c4;
+    --teal-text: #1a7a76;
+    --magenta: #e619b0;
+    --font-display: "Geist", system-ui, sans-serif;
+    --font-body: "Geist", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --canvas: #17141f;
+      --canvas-tint: #1c1826;
+      --ink: #f3f0ea;
+      --ink-soft: #a89fbb;
+      --line: #2c2738;
+      --coral: #ff8a5c;
+      --coral-text: #ff8a5c;
+      --gold: #ffdb70;
+      --violet: #9c86ff;
+      --teal: #4de8d4;
+      --teal-text: #4de8d4;
+      --magenta: #ff5cc7;
+    }
+  }
+  :root[data-theme="dark"] {
+    --canvas: #17141f;
+    --canvas-tint: #1c1826;
+    --ink: #f3f0ea;
+    --ink-soft: #a89fbb;
+    --line: #2c2738;
+    --coral: #ff8a5c;
+    --coral-text: #ff8a5c;
+    --gold: #ffdb70;
+    --violet: #9c86ff;
+    --teal: #4de8d4;
+    --teal-text: #4de8d4;
+    --magenta: #ff5cc7;
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px clamp(20px, 5vw, 56px);
+    border-bottom: 1px solid var(--line);
+  }
+  header .name { font-weight: 650; font-size: 15px; text-decoration: none; }
+  nav { display: flex; gap: 28px; font-family: var(--font-mono); font-size: 12.5px; }
+  nav a { text-decoration: none; color: var(--ink-soft); }
+  nav a.current, nav a:hover { color: var(--ink); }
+
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 64px clamp(20px, 5vw, 56px) 120px; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: .02em;
+    color: var(--violet);
+    text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+  h1.page-title {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(2rem, 4.4vw, 3rem);
+    line-height: 1.12;
+    margin: 0 0 20px;
+    max-width: 18ch;
+  }
+  .lede {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    line-height: 1.65;
+    margin: 0 0 14px;
+  }
+  .lede strong { color: var(--ink); font-weight: 560; }
+  .stance {
+    font-size: .95rem;
+    color: var(--ink-soft);
+    max-width: 62ch;
+    line-height: 1.6;
+    background: var(--canvas-tint);
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin: 28px 0 0;
+  }
+
+  .entries { margin-top: 64px; display: flex; flex-direction: column; gap: 48px; }
+
+  .entry { }
+  .entry-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
+  .entry-domain {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .entry-anchor {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-decoration: none;
+  }
+  .entry-anchor:hover { color: var(--ink); }
+
+  .demo-frame-wrap {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--canvas);
+  }
+  .demo-frame-wrap iframe {
+    display: block;
+    width: 100%;
+    height: 900px;
+    border: none;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px clamp(20px, 5vw, 56px);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  @media (max-width: 640px) {
+    nav { display: none; }
+    .demo-frame-wrap iframe { height: 760px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="name" href="../index.html">Andrea Harter</a>
+  <nav>
+    <a href="../index.html#work">Work</a>
+    <a href="./index.html" class="current">Lab</a>
+    <a href="#">Writing</a>
+    <a href="../index.html#about">About</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <p class="eyebrow">Lab</p>
+  <h1 class="page-title">Small tools, built to be played with.</h1>
+  <p class="lede">
+    Case studies show finished work. This is where the unfinished stuff lives:
+    <strong>small, working experiments</strong> built to test an idea, not to demonstrate a
+    conclusion. Some of these are design tools. A couple aren't, on purpose.
+  </p>
+  <p class="stance">
+    The bar to publish here is low by design. Documented and interesting beats polished.
+    Two of the entries below are genealogy tools, not design tools; they're here because the
+    reasoning underneath them, weighing evidence, separating what's proven from what's merely
+    plausible, is the same reasoning I bring to design decisions. The domain changed. The habit
+    of mind didn't.
+  </p>
+
+  <div class="entries">
+
+    <article class="entry">
+      <div class="entry-head">
+        <span class="entry-domain">Design / UX</span>
+        <a class="entry-anchor" href="ask-the-design-oracle.html" target="_blank" rel="noopener">Open full page ↗</a>
+      </div>
+      <div class="demo-frame-wrap">
+        <iframe src="ask-the-design-oracle.html" title="Ask the Design Oracle — live demo" loading="lazy"></iframe>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="entry-head">
+        <span class="entry-domain">Genealogy → evidence reasoning</span>
+        <a class="entry-anchor" href="source-reliability-calculator.html" target="_blank" rel="noopener">Open full page ↗</a>
+      </div>
+      <div class="demo-frame-wrap">
+        <iframe src="source-reliability-calculator.html" title="Source Reliability Calculator — live demo" loading="lazy"></iframe>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="entry-head">
+        <span class="entry-domain">Genealogy → evidence reasoning</span>
+        <a class="entry-anchor" href="relationship-proof-timeline.html" target="_blank" rel="noopener">Open full page ↗</a>
+      </div>
+      <div class="demo-frame-wrap">
+        <iframe src="relationship-proof-timeline.html" title="Relationship Proof Timeline — live demo" loading="lazy"></iframe>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="entry-head">
+        <span class="entry-domain">Design / UX</span>
+        <a class="entry-anchor" href="maze-to-clarity.html" target="_blank" rel="noopener">Open full page ↗</a>
+      </div>
+      <div class="demo-frame-wrap">
+        <iframe src="maze-to-clarity.html" title="Maze to Clarity — live demo" loading="lazy"></iframe>
+      </div>
+    </article>
+
+  </div>
+</div>
+
+<footer>© 2026 Andrea Harter. Built by hand, hosted on GitHub Pages.</footer>
+
+</body>
+</html>

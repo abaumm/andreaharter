@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ask the Design Oracle — Lab</title>
+<style>
+  :root {
+    --canvas: #fdfcfa;
+    --ink: #201c29;
+    --ink-soft: #5b5566;
+    --coral: #ff5a1f;
+    --coral-text: #c74a22;
+    --gold: #ffd23f;
+    --violet: #6b50f7;
+    --teal: #14d9c4;
+    --magenta: #e619b0;
+    --line: #e7e2da;
+    --card: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Inter", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 64px 24px 96px;
+  }
+
+  .eyebrow {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--violet);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.15;
+    margin: 0 0 14px;
+    max-width: 20ch;
+  }
+
+  .intro {
+    color: var(--ink-soft);
+    max-width: 64ch;
+    font-size: 16px;
+    margin: 0 0 8px;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    color: #0d8a7d;
+    margin-top: 18px;
+    margin-bottom: 44px;
+  }
+  .status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .stage {
+    position: relative;
+    height: 460px;
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #fffaf3 0%, #fdfcfa 100%);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .blob-field {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .blob {
+    position: absolute;
+    filter: blur(18px);
+    opacity: 0.88;
+    animation: drift 14s ease-in-out infinite;
+  }
+  .blob-1 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle at 35% 30%, var(--coral), var(--gold) 75%);
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    left: 50%; top: 50%;
+    margin-left: -130px; margin-top: -130px;
+    cursor: pointer;
+    z-index: 3;
+    animation-name: drift, morph;
+    animation-duration: 9s, 9s;
+  }
+  .blob-2 {
+    width: 190px; height: 190px;
+    background: radial-gradient(circle at 40% 40%, var(--violet), var(--magenta) 80%);
+    border-radius: 58% 42% 37% 63% / 55% 41% 59% 45%;
+    left: 32%; top: 30%;
+    opacity: 0.55;
+    animation-name: drift2, morph2;
+    animation-duration: 10s, 11s;
+  }
+  .blob-3 {
+    width: 150px; height: 150px;
+    background: radial-gradient(circle at 45% 45%, var(--teal), #6be6d8 80%);
+    border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%;
+    right: 22%; bottom: 22%;
+    opacity: 0.5;
+    animation-name: drift3, morph3;
+    animation-duration: 8s, 10s;
+  }
+
+  @keyframes drift {
+    0% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(38px, -46px) scale(1.05); }
+    50% { transform: translate(-30px, -20px) scale(0.97); }
+    75% { transform: translate(-44px, 34px) scale(1.03); }
+    100% { transform: translate(0, 0) scale(1); }
+  }
+  @keyframes drift2 {
+    0% { transform: translate(0, 0); }
+    33% { transform: translate(-52px, 40px); }
+    66% { transform: translate(40px, 46px); }
+    100% { transform: translate(0, 0); }
+  }
+  @keyframes drift3 {
+    0% { transform: translate(0, 0); }
+    30% { transform: translate(44px, -34px); }
+    65% { transform: translate(-38px, -44px); }
+    100% { transform: translate(0, 0); }
+  }
+  @keyframes morph {
+    0% { border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; }
+    33% { border-radius: 65% 35% 30% 70% / 60% 65% 35% 40%; }
+    66% { border-radius: 35% 65% 70% 30% / 30% 40% 60% 70%; }
+    100% { border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; }
+  }
+  @keyframes morph2 {
+    0% { border-radius: 58% 42% 37% 63% / 55% 41% 59% 45%; }
+    33% { border-radius: 30% 70% 65% 35% / 65% 30% 70% 35%; }
+    66% { border-radius: 70% 30% 45% 55% / 35% 65% 40% 60%; }
+    100% { border-radius: 58% 42% 37% 63% / 55% 41% 59% 45%; }
+  }
+  @keyframes morph3 {
+    0% { border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%; }
+    33% { border-radius: 68% 32% 60% 40% / 32% 68% 35% 65%; }
+    66% { border-radius: 32% 68% 45% 55% / 68% 35% 65% 30%; }
+    100% { border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blob { animation: none !important; }
+  }
+
+  .prompt {
+    position: absolute;
+    right: 40px;
+    top: 40px;
+    text-align: right;
+    max-width: 220px;
+    z-index: 4;
+    pointer-events: none;
+  }
+  .prompt p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .prompt .arrow {
+    font-size: 20px;
+    display: block;
+    margin-top: 8px;
+    color: var(--ink);
+  }
+
+  .stage.answered .blob-field { opacity: 0.35; filter: saturate(0.7); }
+  .stage.answered .prompt { display: none; }
+
+  .card-wrap {
+    position: relative;
+    z-index: 5;
+    display: none;
+  }
+  .stage.answered .card-wrap { display: block; }
+
+  .oracle-card {
+    width: 300px;
+    padding: 3px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--gold), var(--coral), var(--magenta), var(--violet));
+    box-shadow: 0 18px 40px rgba(32,28,41,0.16);
+    animation: cardIn 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(14px) scale(0.94); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .oracle-card-inner {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 34px 26px 28px;
+    text-align: center;
+  }
+
+  .sunburst {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 22px;
+  }
+
+  .card-label {
+    font-family: ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+
+  .card-text {
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  .stage-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+  }
+
+  button.action {
+    appearance: none;
+    border: none;
+    background: var(--ink);
+    color: var(--canvas);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button.action:hover { background: #34293f; }
+
+  button.ghost {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-soft);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 11px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button.ghost:hover { border-color: var(--ink); color: var(--ink); }
+
+  .stage-controls {
+    gap: 10px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 64px 0 40px;
+  }
+
+  .note {
+    max-width: 64ch;
+  }
+  .note h2 {
+    font-size: 15px;
+    margin: 0 0 12px;
+  }
+  .note ul {
+    padding-left: 18px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .note li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">LAB / 10</p>
+  <h1>Ask the Design Oracle</h1>
+  <p class="intro">
+    Click the orange blob for a small, slightly cosmic piece of design wisdom. None of it is real
+    advice. Some of it might still be true.
+  </p>
+  <div class="status">experiment</div>
+
+  <div class="stage" id="stage">
+    <div class="blob-field" id="blobField">
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+      <div class="blob blob-1" id="orb" onclick="drawCard()"></div>
+    </div>
+    <div class="prompt">
+      <p>Click the orb<br>to consult the oracle</p>
+      <span class="arrow">↙</span>
+    </div>
+    <div class="card-wrap" id="cardWrap"></div>
+  </div>
+
+  <div class="stage-controls" id="controls" style="display: none;">
+    <button class="action" onclick="drawCard()">Draw again</button>
+    <button class="ghost" onclick="hideCard()">Close card</button>
+  </div>
+
+  <hr class="divider">
+
+  <div class="note">
+    <h2>What this is</h2>
+    <p class="intro" style="margin-bottom: 28px;">
+      The blob is the same morphing shape language from the rest of the site, just given a job
+      other than sitting in a hero. The card draws from a small deck of design one-liners, no two
+      draws guaranteed to be different in a row, because a real oracle would probably do that to
+      you too. The motion here is more obvious than anywhere else on the site, on purpose, since
+      this is a toy rather than a reading surface. It still turns off completely for anyone with
+      reduced motion set at the system level.
+    </p>
+    <h2>What I learned</h2>
+    <ul>
+      <li>[fill in after a few people click the orb]</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+const cards = [
+  "The edge case you ignore today becomes the support ticket you inherit tomorrow.",
+  "Every dropdown you didn't test is a decision you made for someone else.",
+  "Whitespace is just silence with better manners.",
+  "The bug was never in the code. It was in the shared understanding.",
+  "Somewhere, a stakeholder is calling this 'just a small tweak.'",
+  "Your users don't want your onboarding flow. They want to be finished with it.",
+  "A hundred edge cases walk into a spec. Only one gets written down.",
+  "The prototype lied a little. The production data told the whole truth.",
+  "Somewhere, a Figma file and a codebase have drifted apart and no one has noticed yet.",
+  "Ambiguity is just structure that hasn't been found yet.",
+  "Every 'quick fix' has a backstory it's not telling you.",
+  "The best system documents its own exceptions.",
+  "A meeting that could have been a comment thread haunts every roadmap.",
+  "The button said Save. It meant Hope.",
+  "A confident answer and an unconfirmed assumption look identical until you check.",
+  "The clearest interface is the one nobody has to think about.",
+  "Somewhere, a stakeholder just asked if you can add a toggle for that.",
+  "The design system remembers what the roadmap forgot."
+];
+
+let deck = [];
+
+function reshuffle() {
+  deck = [...cards].sort(() => Math.random() - 0.5);
+}
+
+function drawCard() {
+  if (deck.length === 0) reshuffle();
+  const text = deck.pop();
+
+  const stage = document.getElementById('stage');
+  const cardWrap = document.getElementById('cardWrap');
+  stage.classList.add('answered');
+  document.getElementById('controls').style.display = 'flex';
+
+  cardWrap.innerHTML = `
+    <div class="oracle-card">
+      <div class="oracle-card-inner">
+        <svg class="sunburst" viewBox="0 0 64 64">
+          ${sunburstRays()}
+          <circle cx="32" cy="32" r="11" fill="#fdfcfa" stroke="#6b50f7" stroke-width="1.5"/>
+        </svg>
+        <p class="card-label">Card drawn</p>
+        <p class="card-text">${text}</p>
+      </div>
+    </div>
+  `;
+}
+
+function hideCard() {
+  const stage = document.getElementById('stage');
+  const cardWrap = document.getElementById('cardWrap');
+  stage.classList.remove('answered');
+  cardWrap.innerHTML = '';
+  document.getElementById('controls').style.display = 'none';
+}
+
+function sunburstRays() {
+  let rays = '';
+  const count = 16;
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2;
+    const inner = 14;
+    const outer = i % 2 === 0 ? 30 : 24;
+    const x1 = 32 + Math.cos(angle) * inner;
+    const y1 = 32 + Math.sin(angle) * inner;
+    const x2 = 32 + Math.cos(angle) * outer;
+    const y2 = 32 + Math.sin(angle) * outer;
+    rays += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#ff5a1f" stroke-width="1.4" stroke-linecap="round"/>`;
+  }
+  return rays;
+}
+</script>
+
+</body>
+</html>

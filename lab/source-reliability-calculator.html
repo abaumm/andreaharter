@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Source Reliability Calculator — Lab</title>
+<style>
+  :root {
+    --canvas: #fdfcfa;
+    --ink: #201c29;
+    --ink-soft: #5b5566;
+    --coral: #ff5a1f;
+    --coral-text: #c74a22;
+    --gold: #ffd23f;
+    --gold-text: #9c7900;
+    --violet: #6b50f7;
+    --teal: #14d9c4;
+    --teal-text: #0d8a7d;
+    --line: #e7e2da;
+    --card: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Inter", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 64px 24px 96px;
+  }
+
+  .eyebrow {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--violet);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.15;
+    margin: 0 0 14px;
+    max-width: 18ch;
+  }
+
+  .intro {
+    color: var(--ink-soft);
+    max-width: 64ch;
+    font-size: 16px;
+    margin: 0 0 8px;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--teal-text);
+    margin-top: 18px;
+    margin-bottom: 44px;
+  }
+  .status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .chip {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.12s ease, background 0.12s ease;
+  }
+  .chip:hover { border-color: var(--violet); }
+  .chip.active {
+    background: var(--ink);
+    color: var(--canvas);
+    border-color: var(--ink);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 32px;
+    min-height: 260px;
+  }
+
+  .card-empty {
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .rec-name {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+
+  .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .rating-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .rating-high { background: rgba(20,217,196,0.16); color: var(--teal-text); }
+  .rating-medium { background: rgba(255,210,63,0.28); color: var(--gold-text); }
+  .rating-low { background: rgba(255,90,31,0.16); color: var(--coral-text); }
+  .rating-lead { background: rgba(107,80,247,0.14); color: var(--violet); }
+
+  .tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+
+  .tag-pill {
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 3px 9px;
+  }
+
+  .field-block { margin-bottom: 18px; }
+  .field-block:last-child { margin-bottom: 0; }
+
+  .field-label {
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    margin: 0 0 5px;
+    text-transform: uppercase;
+  }
+
+  .field-text {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--ink);
+    max-width: 68ch;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: rise 0.32s ease forwards;
+  }
+
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 64px 0 40px;
+  }
+
+  .note {
+    max-width: 64ch;
+  }
+  .note h2 {
+    font-size: 15px;
+    margin: 0 0 12px;
+  }
+  .note ul {
+    padding-left: 18px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .note li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">LAB / 06</p>
+  <h1>Source Reliability Calculator</h1>
+  <p class="intro">
+    Pick a record type you'd run into doing genealogy research. It rates how much weight the
+    record can actually carry, and why, using the same classification genealogists use: what kind
+    of document it is, who was reporting the information, and how directly it supports a claim.
+  </p>
+  <p class="intro">
+    It's the same habit I bring to work: separate what a source actually proves from what it only
+    suggests, before you build something on top of it.
+  </p>
+  <div class="status">experiment</div>
+
+  <div class="picker" id="picker"></div>
+
+  <div class="card" id="card">
+    <p class="card-empty">Pick a record type above to see how it holds up.</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="note">
+    <h2>What this is</h2>
+    <p class="intro" style="margin-bottom: 28px;">
+      A reference tool, not a verdict machine. Genealogical evidence is classified along three
+      axes: provenance (was this made at the time, or copied/transcribed later), information
+      (did the person reporting it actually witness it), and evidence type (does it state the
+      fact directly, or only support it indirectly). None of these ratings replace looking at
+      the actual record. A "high reliability" record type can still be the wrong record for your
+      person, and a "lead only" source can still point you somewhere true.
+    </p>
+    <h2>What I learned</h2>
+    <ul>
+      <li>[fill in after using this on a real research question]</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+const records = [
+  {
+    name: "Census (original page)",
+    rating: "medium",
+    ratingLabel: "MIXED — depends on the column",
+    tags: ["Original", "Mixed primary/secondary", "Direct for most fields"],
+    reasoning: "The enumeration itself is an original record made at the time of the count. But it's not uniformly reliable: age, birthplace, and household relationship are usually secondary information, reported by whoever answered the door, not each person individually. \"Relationship to head\" and \"marital status\" columns didn't even exist before 1880.",
+    watch: "Ages drift 2 to 3 years between census years. Don't merge or split two people on a small age gap alone, and treat pre-1880 relationship reads as inferred from position and age, not stated."
+  },
+  {
+    name: "Death certificate",
+    rating: "medium",
+    ratingLabel: "SPLIT — two different facts, two different weights",
+    tags: ["Original", "Primary + secondary in one document", "Direct"],
+    reasoning: "One document, two reliability levels. The date and cause of death are primary information, usually reported by a doctor who was there. The parents' names and birthplace are secondary, supplied by a grieving informant who may not have known or remembered correctly.",
+    watch: "Never treat parent names on a death certificate as settled without a second, independent source. This is the single most common place bad parentage gets attached to a tree."
+  },
+  {
+    name: "Church register (baptism, marriage, burial)",
+    rating: "high",
+    ratingLabel: "HIGH — for what it directly records",
+    tags: ["Original", "Usually primary", "Direct"],
+    reasoning: "Recorded close to the event, often by a clergy member with direct involvement. Baptismal entries are strong evidence of a birth window and named parents; burial entries are strong evidence of a death window.",
+    watch: "A baptism date is not a birth date. Some families delayed baptism by months or years. Note the gap explicitly rather than treating baptism as birth."
+  },
+  {
+    name: "Obituary",
+    rating: "medium",
+    ratingLabel: "MEDIUM — good for names, soft on facts",
+    tags: ["Derivative-adjacent", "Secondary", "Direct for relationships named"],
+    reasoning: "Written shortly after death, usually by family, so it's genuinely useful for naming a surviving spouse, children, and siblings. But it's an authored account, not a record of the event itself, and families sometimes omit or soften details on purpose.",
+    watch: "Omission isn't proof of absence. A child left out of an obituary may have predeceased the parent, been estranged, or simply been missed."
+  },
+  {
+    name: "Find A Grave / headstone",
+    rating: "low",
+    ratingLabel: "LOW — lead only, until verified",
+    tags: ["Derivative", "Secondary (usually)", "Indirect"],
+    reasoning: "A headstone is carved sometime after death, often by someone other than the deceased, and a Find A Grave listing is a further layer on top of that, added by a volunteer who may have transcribed it wrong or linked the wrong record.",
+    watch: "Verify a memorial by its own internal sources before it carries weight. Two same-named people are easily conflated into one memorial page."
+  },
+  {
+    name: "Online tree / hint / ThruLines",
+    rating: "lead",
+    ratingLabel: "LEAD ONLY — never proof by itself",
+    tags: ["Authored narrative", "Unverified", "Not evidence on its own"],
+    reasoning: "A hint or a match in someone else's tree is a pointer to go check, not a source. A claim repeated in ten trees that all copied one bad source has the strength of one bad source, not ten.",
+    watch: "Check whether your \"corroborating\" trees are actually independent, or whether they all trace back to the same original mistake."
+  },
+  {
+    name: "DNA match / ThruLines suggestion",
+    rating: "medium",
+    ratingLabel: "MEDIUM — supports, rarely proves alone",
+    tags: ["Indirect evidence", "Needs correlation"],
+    reasoning: "Shared DNA is real evidence of a genetic connection, but the suggested relationship path is inferred by an algorithm, not proven by the match itself. Match size and clustering with other known relatives matter more than the labeled relationship.",
+    watch: "At 4th-cousin distance or further, roughly half of genuine cousins share no detectable DNA. A non-match at that distance disproves nothing."
+  },
+  {
+    name: "Land or deed record",
+    rating: "high",
+    ratingLabel: "HIGH — often underused",
+    tags: ["Original", "Primary", "Direct + chains forward/backward"],
+    reasoning: "Deeds are created at the time of the transaction by parties with strong incentive to get names right. They often name a wife through a dower release, which most other records don't, and chain to prior land entries.",
+    watch: "Grantor and grantee names can still collide with a same-named neighbor. Confirm with a matching household or witness before assuming it's your person."
+  },
+  {
+    name: "Probate record or will",
+    rating: "high",
+    ratingLabel: "HIGH — strong for family structure",
+    tags: ["Original", "Primary", "Direct"],
+    reasoning: "A will or probate file is created at or near death, usually names children and their relationships explicitly, and often reveals a married daughter's husband's name.",
+    watch: "An unnamed or omitted heir isn't proof they didn't exist. They may have died before the will, been previously provided for, or been estranged."
+  },
+  {
+    name: "Family tradition / oral history",
+    rating: "low",
+    ratingLabel: "LOW — a lead, occasionally a gem",
+    tags: ["Authored narrative", "Secondary or later", "Indirect"],
+    reasoning: "Passed down and reshaped with each retelling. Occasionally preserves a real detail no record does, but just as often preserves a flattering or simplified version of events.",
+    watch: "Treat a family story as a hypothesis to test against records, never as a conclusion on its own."
+  },
+  {
+    name: "City directory",
+    rating: "medium",
+    ratingLabel: "MEDIUM — good for timeline, thin on relationships",
+    tags: ["Original", "Primary for address/occupation", "Indirect for household"],
+    reasoning: "Published annually and useful for pinning down where someone lived and worked between census years. Directories usually list only the head of household, so they're weak evidence for anyone else in the home.",
+    watch: "A name disappearing from a directory could mean death, a move, or just a canvasser who missed the house that year."
+  },
+  {
+    name: "Compiled family history or county history book",
+    rating: "low",
+    ratingLabel: "LOW — treat as a lead, cite what it cites",
+    tags: ["Authored narrative", "Secondary", "Indirect"],
+    reasoning: "Written well after the events described, often from family submissions the author didn't independently verify. Useful for pointing toward records, weak as a record itself.",
+    watch: "Chase the footnotes, if there are any, back to an original. A published book reads as more authoritative than it is."
+  }
+];
+
+const picker = document.getElementById('picker');
+const card = document.getElementById('card');
+
+records.forEach((r, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'chip';
+  btn.textContent = r.name;
+  btn.onclick = () => selectRecord(i, btn);
+  picker.appendChild(btn);
+});
+
+function selectRecord(i, btn) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+
+  const r = records[i];
+  card.innerHTML = "";
+
+  const inner = document.createElement('div');
+  inner.className = 'reveal';
+
+  const ratingClass = {high: 'rating-high', medium: 'rating-medium', low: 'rating-low', lead: 'rating-lead'}[r.rating];
+
+  inner.innerHTML = `
+    <p class="rec-name">${r.name}</p>
+    <div class="rating-row">
+      <span class="rating-badge ${ratingClass}">${r.ratingLabel}</span>
+    </div>
+    <div class="tags-row">
+      ${r.tags.map(t => '<span class="tag-pill">' + t + '</span>').join('')}
+    </div>
+    <div class="field-block">
+      <p class="field-label">Why</p>
+      <p class="field-text">${r.reasoning}</p>
+    </div>
+    <div class="field-block">
+      <p class="field-label">Watch for</p>
+      <p class="field-text">${r.watch}</p>
+    </div>
+  `;
+
+  card.appendChild(inner);
+}
+</script>
+
+</body>
+</html>

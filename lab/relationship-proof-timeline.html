@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relationship Proof Timeline — Lab</title>
+<style>
+  :root {
+    --canvas: #fdfcfa;
+    --ink: #201c29;
+    --ink-soft: #5b5566;
+    --coral: #ff5a1f;
+    --coral-text: #c74a22;
+    --gold: #ffd23f;
+    --gold-text: #9c7900;
+    --violet: #6b50f7;
+    --teal: #14d9c4;
+    --teal-text: #0d8a7d;
+    --line: #e7e2da;
+    --card: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: -apple-system, "Segoe UI", "Inter", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 64px 24px 96px;
+  }
+
+  .eyebrow {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--violet);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.15;
+    margin: 0 0 14px;
+    max-width: 18ch;
+  }
+
+  .intro {
+    color: var(--ink-soft);
+    max-width: 66ch;
+    font-size: 16px;
+    margin: 0 0 8px;
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--teal-text);
+    margin-top: 18px;
+    margin-bottom: 20px;
+  }
+  .status::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--teal);
+  }
+
+  .claim-box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 44px;
+    font-size: 14px;
+    max-width: 66ch;
+  }
+  .claim-box p {
+    margin: 0;
+  }
+  .claim-label {
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+  }
+  .claim-sub {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+  }
+
+  .stepper {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 40px;
+    overflow-x: auto;
+  }
+
+  .step {
+    flex: 1;
+    min-width: 140px;
+    appearance: none;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    padding: 0 14px 0 0;
+    font-family: inherit;
+  }
+
+  .step-bar {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--line);
+    margin-bottom: 10px;
+    transition: background 0.2s ease;
+  }
+  .step.done .step-bar { background: var(--teal); }
+  .step.active .step-bar { background: var(--violet); }
+
+  .step-num {
+    font-family: ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .step.active .step-num, .step.done .step-num { color: var(--ink); }
+
+  .step-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .step.active .step-label, .step.done .step-label { color: var(--ink); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  .stack-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+
+  .stack-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 13.5px;
+    animation: rise 0.3s ease forwards;
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  .stack-item:last-child { border-bottom: none; }
+
+  .stack-check {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--teal);
+    color: white;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 30px;
+    min-height: 320px;
+  }
+
+  .conf-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .conf-badge {
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .conf-none { background: rgba(91,85,102,0.12); color: var(--ink-soft); }
+  .conf-low { background: rgba(255,90,31,0.16); color: var(--coral-text); }
+  .conf-medium { background: rgba(255,210,63,0.28); color: var(--gold-text); }
+  .conf-medhigh { background: rgba(20,217,196,0.14); color: var(--teal-text); }
+  .conf-proven { background: rgba(20,217,196,0.22); color: var(--teal-text); }
+
+  .stage-title {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 0 0 20px;
+  }
+
+  .field-block { margin-bottom: 18px; }
+  .field-block:last-child { margin-bottom: 0; }
+
+  .field-label {
+    font-size: 11px;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin: 0 0 5px;
+  }
+
+  .field-text {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--ink);
+  }
+
+  .field-text.needed {
+    color: var(--ink-soft);
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 28px;
+  }
+
+  button.nav {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 13px;
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button.nav:hover:not(:disabled) { border-color: var(--violet); color: var(--violet); }
+  button.nav:disabled { opacity: 0.35; cursor: default; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 64px 0 40px;
+  }
+
+  .note {
+    max-width: 66ch;
+  }
+  .note h2 {
+    font-size: 15px;
+    margin: 0 0 12px;
+  }
+  .note ul {
+    padding-left: 18px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+  .note li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">LAB / 07</p>
+  <h1>Relationship Proof Timeline</h1>
+  <p class="intro">
+    A claim about a family relationship doesn't become true the moment someone finds it. It moves
+    through stages, each one adding evidence and ruling out alternatives. Step through a worked
+    example below to see how a claim actually earns confidence, and what still has to happen at
+    each stage before it counts as proven.
+  </p>
+  <p class="intro">
+    It's the same discipline behind any decision I'd stand behind in design work: knowing the
+    difference between what the evidence actually supports and what you're hoping it supports,
+    and being honest about which stage a claim is really at.
+  </p>
+  <div class="status">experiment</div>
+
+  <div class="claim-box">
+    <span class="claim-label">The claim being tested</span>
+    <p>Sarah Combs, who married in Pike County in 1848, was the daughter of James Combs and Mary Ann Whitfield.</p>
+    <p class="claim-sub">A synthetic example, not a real research case, built to show how the stages actually work.</p>
+  </div>
+
+  <div class="stepper" id="stepper"></div>
+
+  <div class="grid">
+    <div>
+      <p class="stack-title">Evidence stack</p>
+      <div id="stack"></div>
+    </div>
+    <div class="card" id="card"></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="note">
+    <h2>What this is</h2>
+    <p class="intro" style="margin-bottom: 28px;">
+      Loosely modeled on the Genealogical Proof Standard: a reasonably exhaustive search, full
+      citations, correlation between independent sources, resolution of conflicting evidence, and
+      a soundly reasoned conclusion. A claim doesn't need all five at once. It needs to move
+      through them honestly, and stay revisable if something new turns up later.
+    </p>
+    <h2>What I learned</h2>
+    <ul>
+      <li>[fill in after using this on a real research question]</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+const stages = [
+  {
+    label: "Hint",
+    evidence: "Appears in three online family trees and one DNA-match suggestion.",
+    confClass: "conf-none",
+    confLabel: "NO CONFIDENCE — this is a lead",
+    reasoning: "None of these sources are independent of each other, and none point to an original record. A claim repeated in ten trees that all copied one bad source has the strength of one bad source, not ten.",
+    needed: "An original record that mentions the relationship directly, not just another tree agreeing."
+  },
+  {
+    label: "Record located",
+    evidence: "Located Sarah's 1848 marriage bond, which names James Combs as the bondsman.",
+    confClass: "conf-low",
+    confLabel: "LOW — one source, not yet independent",
+    reasoning: "A bondsman was very often the bride's father, but not always. This is one original record, and bondsmen were sometimes a brother, uncle, or family friend instead. One source, however strong, isn't enough on its own.",
+    needed: "A second, independent record naming the same relationship."
+  },
+  {
+    label: "Corroborated",
+    evidence: "James Combs's 1861 probate file lists Sarah, by her married name, as one of his heirs.",
+    confClass: "conf-medium",
+    confLabel: "MEDIUM — two independent sources agree",
+    reasoning: "The marriage bond and the probate file were created for different reasons, by different people, years apart, and neither was likely influenced by the other. That independence is what makes the agreement meaningful.",
+    needed: "Check for a same-named competitor nearby, and confirm no record contradicts this."
+  },
+  {
+    label: "Conflict addressed",
+    evidence: "A second James Combs family was found one county over. Distinguished by a different wife's name and no overlap in witnesses or neighbors.",
+    confClass: "conf-medhigh",
+    confLabel: "MEDIUM-HIGH — known conflicts explained",
+    reasoning: "Finding a look-alike family doesn't weaken the case if it can be positively ruled out. The competing James Combs has his own wife, household, and set of records that don't intersect with this family at any point.",
+    needed: "Write the reasoning down in one place, with citations, so it can be checked later."
+  },
+  {
+    label: "Proven",
+    evidence: "Written conclusion citing the bond, the probate file, and the ruled-out competitor, with reasoning for how they fit together.",
+    confClass: "conf-proven",
+    confLabel: "PROVEN — for now",
+    reasoning: "This meets a reasonable version of the Genealogical Proof Standard: multiple independent sources, a resolved conflict, and a documented chain of reasoning. Proven in genealogy always means proven given the evidence found so far, not proven beyond any possible future record.",
+    needed: "Nothing further, unless a new record surfaces that contradicts it."
+  }
+];
+
+let current = 0;
+
+const stepper = document.getElementById('stepper');
+const stackEl = document.getElementById('stack');
+const card = document.getElementById('card');
+
+stages.forEach((s, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'step';
+  btn.innerHTML = '<div class="step-bar"></div><span class="step-num">0' + (i + 1) + '</span><span class="step-label">' + s.label + '</span>';
+  btn.onclick = () => goTo(i);
+  stepper.appendChild(btn);
+});
+
+function render() {
+  document.querySelectorAll('.step').forEach((el, i) => {
+    el.classList.toggle('active', i === current);
+    el.classList.toggle('done', i < current);
+  });
+
+  stackEl.innerHTML = "";
+  for (let i = 0; i <= current; i++) {
+    const item = document.createElement('div');
+    item.className = 'stack-item';
+    item.style.animationDelay = (i * 60) + "ms";
+    item.innerHTML = '<span class="stack-check">✓</span><span>' + stages[i].evidence + '</span>';
+    stackEl.appendChild(item);
+  }
+
+  const s = stages[current];
+  card.innerHTML = `
+    <div class="conf-row">
+      <span class="conf-badge ${s.confClass}">${s.confLabel}</span>
+    </div>
+    <p class="stage-title">${s.label}</p>
+    <div class="field-block">
+      <p class="field-label">Reasoning</p>
+      <p class="field-text">${s.reasoning}</p>
+    </div>
+    <div class="field-block">
+      <p class="field-label">${current === stages.length - 1 ? "Left to do" : "Still needed"}</p>
+      <p class="field-text needed">${s.needed}</p>
+    </div>
+    <div class="nav-row">
+      <button class="nav" onclick="goTo(${current - 1})" ${current === 0 ? "disabled" : ""}>Back</button>
+      <button class="nav" onclick="goTo(${current + 1})" ${current === stages.length - 1 ? "disabled" : ""}>Next stage</button>
+    </div>
+  `;
+}
+
+function goTo(i) {
+  if (i < 0 || i >= stages.length) return;
+  current = i;
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
