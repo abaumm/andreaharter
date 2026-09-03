@@ -26,6 +26,9 @@
     --magenta-text: #d219a2;
     --focus: #6b50f7;
     --script: #5f78e0;
+    --canvas-rgb: 253, 252, 250;
+    --blob-teal: #a8e8de;
+    --blob-magenta: #f4b8d9;
 
     --font-display: "Geist", system-ui, sans-serif;
     --font-body: "Geist", system-ui, sans-serif;
@@ -50,6 +53,9 @@
       --magenta: #ff5cc7;
       --magenta-text: #ff5cc7;
       --script: #93a4ff;
+      --canvas-rgb: 23, 20, 31;
+      --blob-teal: #b6ede4;
+      --blob-magenta: #f6c5e0;
     }
   }
   :root[data-theme="dark"] {
@@ -68,6 +74,9 @@
     --magenta: #ff5cc7;
     --magenta-text: #ff5cc7;
     --script: #93a4ff;
+    --canvas-rgb: 23, 20, 31;
+    --blob-teal: #b6ede4;
+    --blob-magenta: #f6c5e0;
   }
 
   * { box-sizing: border-box; }
@@ -178,57 +187,73 @@
   }
   .blob {
     position: absolute;
-    opacity: var(--op, 0.9);
-    animation: morph var(--dur, 20s) ease-in-out infinite,
-               drift var(--ddur, 30s) ease-in-out infinite;
+    filter: blur(38px);
+    opacity: var(--op, 0.6);
+    animation: drift-wide var(--ddur, 15s) ease-in-out infinite,
+               pulse var(--dur, 8s) ease-in-out infinite,
+               blob-morph var(--mdur, 11s) ease-in-out infinite;
     transform-origin: center;
-    filter: blur(0.3px);
   }
 
   .blob-1 {
-    width: min(34vw, 420px); aspect-ratio: 1;
-    top: 2%; right: -2%;
+    width: min(39vw, 470px); aspect-ratio: 1;
+    top: -4%; right: -8%;
     background: var(--coral);
-    --dur: 22s; --ddur: 32s;
-    opacity: 0.9;
-    border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%;
+    --dur: 10s; --ddur: 13s; --mdur: 12s;
+    --op: 0.65;
   }
   .blob-2 {
-    width: min(19vw, 230px); aspect-ratio: 1;
-    top: 46%; right: 22%;
+    width: min(25vw, 300px); aspect-ratio: 1;
+    top: 36%; right: 16%;
     background: var(--gold);
-    --dur: 18s; --ddur: 24s;
-    animation-delay: -5s, -8s;
-    opacity: 0.85;
-    border-radius: 42% 58% 55% 45% / 55% 45% 60% 40%;
+    --dur: 8s; --ddur: 11s; --mdur: 9.5s;
+    animation-delay: -5s, -8s, -4s;
+    --op: 0.58;
   }
   .blob-3 {
-    width: min(13vw, 150px); aspect-ratio: 1;
-    top: 12%; right: 30%;
-    background: var(--teal);
-    --dur: 16s; --ddur: 20s;
-    animation-delay: -10s, -3s;
-    opacity: 0.7;
-    border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%;
+    width: min(19vw, 220px); aspect-ratio: 1;
+    top: 2%; right: 22%;
+    background: var(--blob-teal);
+    --dur: 7s; --ddur: 9.5s; --mdur: 8s;
+    animation-delay: -10s, -3s, -6s;
+    --op: 0.55;
   }
   .blob-4 {
-    width: min(9vw, 100px); aspect-ratio: 1;
-    top: 62%; right: 8%;
-    background: var(--magenta);
-    --dur: 14s; --ddur: 18s;
-    animation-delay: -6s, -12s;
-    opacity: 0.75;
-    border-radius: 55% 45% 50% 50% / 45% 55% 45% 55%;
+    width: min(14vw, 150px); aspect-ratio: 1;
+    top: 54%; right: 8%;
+    background: var(--blob-magenta);
+    --dur: 6s; --ddur: 8.5s; --mdur: 7s;
+    animation-delay: -6s, -12s, -2s;
+    --op: 0.55;
   }
 
-  @keyframes morph {
-    0%, 100% { border-radius: 60% 40% 55% 45% / 45% 55% 45% 55%; }
-    33%      { border-radius: 46% 54% 42% 58% / 58% 42% 62% 38%; }
-    66%      { border-radius: 54% 46% 60% 40% / 40% 60% 44% 56%; }
+  @keyframes drift-wide {
+    0%   { transform: translate(0, 0) scale(1); }
+    25%  { transform: translate(-7%, 5%) scale(1.14); }
+    50%  { transform: translate(-2%, -6%) scale(0.9); }
+    75%  { transform: translate(6%, 3%) scale(1.1); }
+    100% { transform: translate(0, 0) scale(1); }
   }
-  @keyframes drift {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50%      { transform: translate(-2.5%, 3%) scale(1.04); }
+  @keyframes pulse {
+    0%, 100% { opacity: var(--op, 0.6); }
+    50%      { opacity: calc(var(--op, 0.6) * 1.35); }
+  }
+  @keyframes blob-morph {
+    0%, 100% { border-radius: 50%; }
+    33%      { border-radius: 42% 58% 63% 37% / 46% 40% 60% 54%; }
+    66%      { border-radius: 60% 40% 38% 62% / 38% 62% 42% 58%; }
+  }
+
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    background: linear-gradient(100deg,
+      rgba(var(--canvas-rgb), 1) 0%,
+      rgba(var(--canvas-rgb), 0.96) 40%,
+      rgba(var(--canvas-rgb), 0.55) 58%,
+      rgba(var(--canvas-rgb), 0) 76%);
   }
 
   .hero-copy {
@@ -282,7 +307,7 @@
     letter-spacing: 0.01em;
     text-decoration: none;
     padding: 0.85rem 1.4rem;
-    border-radius: 999px;
+    border-radius: 3px;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -356,6 +381,30 @@
     color: var(--ink-soft);
     margin: 0;
     max-width: 36rem;
+  }
+
+  /* ---------- Lab section note: tilted, stacked, beside headline ---------- */
+  #lab .section-head { position: relative; }
+  .lab-note-stack {
+    position: absolute;
+    top: 2.9em;
+    left: 100%;
+    margin-left: -60px;
+    text-align: left;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .lab-note-stack span {
+    display: block;
+    font-family: var(--font-script);
+    color: var(--script);
+    font-size: 26px;
+    line-height: 1.05;
+  }
+  .lab-note-stack .l1 { transform: rotate(-18deg); }
+  .lab-note-stack .l2 { transform: rotate(-18deg) translateX(10px); margin-top: 0; }
+  @media (max-width: 900px) {
+    .lab-note-stack { display: none; }
   }
 
   /* ---------- Credibility strip ---------- */
@@ -950,6 +999,8 @@
       <span class="blob blob-4"></span>
     </div>
 
+    <div class="hero-scrim" aria-hidden="true"></div>
+
     <div class="hero-copy">
       <p class="eyebrow">Senior UX Designer, based in St. Louis</p>
       <h1 class="hero-title">Hi, I'm Andrea.</h1>
@@ -1119,6 +1170,10 @@
 
   <section class="block reveal" id="lab" aria-labelledby="lab-title">
     <div class="section-head">
+      <div class="lab-note-stack">
+        <span class="l1">weekend project</span>
+        <span class="l2">energy</span>
+      </div>
       <span class="section-label">Lab</span>
       <h2 class="section-title" id="lab-title">Small tools, built to be played with</h2>
       <p class="section-dek">
