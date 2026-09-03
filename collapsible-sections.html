@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Collapsible Sections — Andrea Harter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Turning a one-line request to collapse form sections into a full interaction system for dense enterprise case-management forms.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@380..800&family=Geist+Mono:wght@450..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #fdfcfa;
+    --canvas-tint: #f8f6f1;
+    --ink: #201c29;
+    --ink-soft: #6b6478;
+    --line: #ece8e0;
+    --coral: #ff6943;
+    --coral-text: #c74a22;
+    --gold: #ffd23f;
+    --violet: #6b50f7;
+    --lavender: #c8a2fa;
+    --teal: #14d9c4;
+    --teal-text: #1a7a76;
+    --magenta: #e619b0;
+    --magenta-text: #d219a2;
+    --focus: #6b50f7;
+
+    --font-display: "Geist", system-ui, sans-serif;
+    --font-body: "Geist", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --canvas: #17141f;
+      --canvas-tint: #1c1826;
+      --ink: #f3f0ea;
+      --ink-soft: #a89fbb;
+      --line: #2c2738;
+      --coral: #ff7e52;
+      --coral-text: #ff8a5c;
+      --gold: #ffdb70;
+      --violet: #9c86ff;
+      --lavender: #d3b8fb;
+      --teal: #4de8d4;
+      --teal-text: #4de8d4;
+      --magenta: #ff5cc7;
+      --magenta-text: #ff5cc7;
+    }
+  }
+  :root[data-theme="dark"] {
+    --canvas: #17141f;
+    --canvas-tint: #1c1826;
+    --ink: #f3f0ea;
+    --ink-soft: #a89fbb;
+    --line: #2c2738;
+    --coral: #ff7e52;
+    --coral-text: #ff8a5c;
+    --gold: #ffdb70;
+    --violet: #9c86ff;
+    --lavender: #d3b8fb;
+    --teal: #4de8d4;
+    --teal-text: #4de8d4;
+    --magenta: #ff5cc7;
+    --magenta-text: #ff5cc7;
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+
+  header.site-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2.25rem clamp(1.25rem, 4vw, 3rem) 0;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .back-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .back-link:hover, .back-link:focus-visible { color: var(--coral-text); border-color: var(--coral-text); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem); }
+
+  .cs-hero {
+    max-width: 42rem;
+    padding: clamp(3rem, 7vw, 5rem) 0 clamp(2rem, 4vw, 3rem);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-soft);
+    margin: 0 0 1.25rem;
+  }
+  h1.cs-title {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(2rem, 4.4vw, 2.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.5rem;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .cs-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.01em;
+    color: var(--ink-soft);
+  }
+  .cs-meta span:not(:last-child)::after {
+    content: "·";
+    margin-left: 1.25rem;
+    opacity: 0.4;
+  }
+
+  .cs-body {
+    max-width: 42rem;
+    padding-bottom: clamp(4rem, 8vw, 6rem);
+  }
+  .cs-body h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.3rem, 2.4vw, 1.55rem);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: clamp(2.75rem, 5vw, 3.5rem) 0 1.1rem;
+  }
+  .cs-body p {
+    font-size: 1.04rem;
+    line-height: 1.75;
+    color: var(--ink);
+    margin: 0 0 1.3rem;
+  }
+  .cs-body p:first-of-type { margin-top: 0; }
+  .cs-body strong { color: var(--ink); font-weight: 650; }
+
+  footer.site-foot {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 2.5rem;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <a class="wordmark" href="index.html">Andrea Harter</a>
+  <a class="back-link" href="index.html#work">← Back to work</a>
+</header>
+
+<main>
+  <div class="cs-hero">
+    <p class="eyebrow">Case study</p>
+    <h1 class="cs-title">Collapsible Sections: An Interaction System for Dense Case-Management Forms</h1>
+    <p class="cs-meta">
+      <span>Senior UX Designer</span>
+      <span>Enterprise case-management platform (B2B SaaS)</span>
+      <span>Shipped to production; accessibility verification and adoption data not yet completed</span>
+    </p>
+  </div>
+
+  <article class="cs-body">
+    <h2>The challenge</h2>
+    <p>Add a chevron. Remember the state. Done.</p>
+    <p>That's what the request sounded like: let people collapse the form sections they weren't using. Our case records could carry a dozen of them: intake details, involved parties, financial fields, compliance checkboxes, embedded record grids, internal notes with restricted visibility. Everything sat open all the time, so finding the one section you needed meant scrolling past ten you didn't.</p>
+    <p>That request kicked off the project. The scope didn't stay that small for long.</p>
+
+    <h2>The hidden complexity</h2>
+    <p>Once you let people hide content, you've also let them hide problems. A closed section might be hiding a required field that's blocking submission. It might also carry a note that some of its content is visible to an external party on the case. Those are unrelated concerns, a validation issue and a visibility flag, but if both surface as the same small icon on a collapsed section, a user has no way to tell which one they're looking at until they open it up. State that persists across a session is convenient until it leaks into the wrong context and a different case opens looking pre-collapsed for no reason anyone can trace. A printed record is a legal document, and it cannot go out missing sections just because someone had them collapsed on screen.</p>
+    <p>None of that gets fixed by a chevron. Fixing it meant treating collapse and expand as a system with rules.</p>
+
+    <h2>Mapping the system</h2>
+    <p>Six pieces had to hold together as one system. Nine separate implementation tickets would have let them contradict each other. Default state. Expand and collapse behavior. Validation inside hidden content. Persistence, and where it had to stop. How nested sections and embedded record grids inherited all of it. And print, which ignores every other rule above and just shows everything.</p>
+    <p>Picture a sample intake form: a Case Overview section, an Involved Parties section with an embedded grid of related records, a Compliance Checklist section with several required fields, and an internal-notes section visible only to certain roles. Each needed to answer the same six questions, even though they hold completely different kinds of content.</p>
+    <p>The system also had to work for people who don't use a mouse. Collapsed content isn't reachable by keyboard tab order until its section is expanded, and section headings are only focusable when they're interactive or focus reveals something meaningful. Small rule. Easy to skip if nobody writes it down before implementation starts.</p>
+
+    <h2>The indicator model: awareness, blocking, and Party Access</h2>
+    <p><strong>Awareness</strong> is non-blocking. It tells a user there's something worth noticing inside a collapsed section, without saying they've done anything wrong. <strong>Blocking validation</strong> is different in kind, not just in urgency: the form cannot be completed until something changes, and it needed to read as more serious than awareness at a glance. <strong>Party Access</strong> is a third thing entirely, a visibility or permission signal rather than a validation state.</p>
+    <p>Early explorations blurred these three together into one icon that could mean any of them depending on context. Keeping them apart is the part I pushed hardest on. A user looking at that icon needs to know whether it means "worth a glance," "fix this before you can save," or "you don't have access," and one shape can't tell them which.</p>
+    <p>We landed on a shared icon family that shifts between an outlined treatment for awareness and a filled treatment for blocking, paired with a color change, so the distinction doesn't rely on color alone. Party Access stays visually and functionally separate, sitting with the other tab-level icons rather than folded into the status indicator. A proposed fourth signal, for fields that appear later because of a workflow change, was scoped out of this release: its trigger and dismissal logic wasn't ready, and shipping it half-specified would have created more confusion than it solved.</p>
+
+    <h2>Timing: why errors appear after Save, not before</h2>
+    <p>A form that shows red errors before you've typed anything doesn't feel careful. It feels broken. Container-level blocking indicators stay silent on a brand-new case and only activate after the first save attempt finds incomplete required fields. Required-field markers stay visually neutral; an empty field gets red inline text underneath it instead.</p>
+    <p>An error, in this model, is a signal tied to an action a person took, not a default condition of an untouched page. Getting the timing right meant a case creator's first experience is just a blank form, while someone who saves with real gaps gets a signal impossible to miss, including a path to expand whatever section is hiding the problem.</p>
+
+    <h2>State design: why persistence is scoped per case</h2>
+    <p>Remembering that someone had a section collapsed is a real usability win when they return to the same case. It becomes a liability the moment it leaks into a different case: sections start looking collapsed for no reason anyone can explain, and a user can miss content because a different case's state got applied to this one.</p>
+    <p>We scoped state to the specific case and the specific user's browser context, persisting across tabs, windows, refreshes, and logouts, but never traveling from one case to another. That boundary also raised QA questions: what happens when someone clears browser storage, switches users on a shared machine, or opens a private window. Those are edge cases you only catch by asking what persistence is for, not just whether it works.</p>
+
+    <h2>Delivery: keeping the system coherent as sources drifted</h2>
+    <p>Partway through development, our design file fell behind. Engineering and product decisions kept moving in our work-tracking system faster than the visual specs could be updated, and two documents that used to agree stopped agreeing.</p>
+    <p>I keep a running knowledge base of every decision as it gets made, and I use AI-assisted tools to turn that into updated tickets fast, often right after the decision is made. That speed is what actually kept the drift from spreading: a developer, or an AI tool, reading the ticket got the current accepted behavior even while the design file was still catching up. I also wrote down explicitly what should not be inferred from the stale file, so a developer or an AI-assisted tool wouldn't reach into an outdated version and reintroduce a deferred idea as current scope.</p>
+    <p>Without that, a developer building against the old file would have shipped the wrong icon treatment and called it done.</p>
+    <p>The cross-functional team, including engineering and QA, tested a concrete set of conditions this model made visible: different cases for the same user, refresh and logout behavior, cleared storage and private browsing, nested sections with long labels, the moment right after a first save attempt, and how the record prints.</p>
+
+    <h2>Outcome and limitations</h2>
+    <p>Collapsible Sections shipped to production. The team built a coherent behavior model spanning configuration, interactive state, validation, persistence, and print. Indicator meanings, timing rules, and scope boundaries are documented clearly enough for engineering and QA to build and test against. We expect faster scanning of long forms, lower cognitive load, fewer required fields missed inside collapsed sections, and cleaner print output. Screen reader and keyboard behavior across expanded and collapsed states shaped the decisions from the start.</p>
+    <p>Add a chevron. Remember the state. Done. That's still what it looks like from the outside. Look closer and there are six behaviors that had to agree with each other, three indicator types that aren't allowed to blur into one, and a save-timing rule that took a development sync to get right.</p>
+  </article>
+</main>
+
+<footer class="site-foot">© 2026 Andrea Harter. Built by hand, hosted on GitHub Pages.</footer>
+
+</body>
+</html>
