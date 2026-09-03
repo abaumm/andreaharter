@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI-Ready UX Knowledge System — Andrea Harter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Building a personal knowledge system that gives AI tools a memory they can be trusted to use, with clear rules for what counts as fact, assumption, or open question.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@380..800&family=Geist+Mono:wght@450..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #fdfcfa;
+    --canvas-tint: #f8f6f1;
+    --ink: #201c29;
+    --ink-soft: #6b6478;
+    --line: #ece8e0;
+    --coral: #ff6943;
+    --coral-text: #c74a22;
+    --gold: #ffd23f;
+    --violet: #6b50f7;
+    --lavender: #c8a2fa;
+    --teal: #14d9c4;
+    --teal-text: #1a7a76;
+    --magenta: #e619b0;
+    --magenta-text: #d219a2;
+    --focus: #6b50f7;
+
+    --font-display: "Geist", system-ui, sans-serif;
+    --font-body: "Geist", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --canvas: #17141f;
+      --canvas-tint: #1c1826;
+      --ink: #f3f0ea;
+      --ink-soft: #a89fbb;
+      --line: #2c2738;
+      --coral: #ff7e52;
+      --coral-text: #ff8a5c;
+      --gold: #ffdb70;
+      --violet: #9c86ff;
+      --lavender: #d3b8fb;
+      --teal: #4de8d4;
+      --teal-text: #4de8d4;
+      --magenta: #ff5cc7;
+      --magenta-text: #ff5cc7;
+    }
+  }
+  :root[data-theme="dark"] {
+    --canvas: #17141f;
+    --canvas-tint: #1c1826;
+    --ink: #f3f0ea;
+    --ink-soft: #a89fbb;
+    --line: #2c2738;
+    --coral: #ff7e52;
+    --coral-text: #ff8a5c;
+    --gold: #ffdb70;
+    --violet: #9c86ff;
+    --lavender: #d3b8fb;
+    --teal: #4de8d4;
+    --teal-text: #4de8d4;
+    --magenta: #ff5cc7;
+    --magenta-text: #ff5cc7;
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+
+  header.site-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2.25rem clamp(1.25rem, 4vw, 3rem) 0;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .back-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .back-link:hover, .back-link:focus-visible { color: var(--coral-text); border-color: var(--coral-text); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem); }
+
+  .cs-hero {
+    max-width: 42rem;
+    padding: clamp(3rem, 7vw, 5rem) 0 clamp(2rem, 4vw, 3rem);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-soft);
+    margin: 0 0 1.25rem;
+  }
+  h1.cs-title {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(2rem, 4.4vw, 2.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.5rem;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .cs-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.01em;
+    color: var(--ink-soft);
+  }
+  .cs-meta span:not(:last-child)::after {
+    content: "·";
+    margin-left: 1.25rem;
+    opacity: 0.4;
+  }
+
+  .cs-body {
+    max-width: 42rem;
+    padding-bottom: clamp(4rem, 8vw, 6rem);
+  }
+  .cs-body h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.3rem, 2.4vw, 1.55rem);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: clamp(2.75rem, 5vw, 3.5rem) 0 1.1rem;
+  }
+  .cs-body p {
+    font-size: 1.04rem;
+    line-height: 1.75;
+    color: var(--ink);
+    margin: 0 0 1.3rem;
+  }
+  .cs-body p:first-of-type { margin-top: 0; }
+  .cs-body strong { color: var(--ink); font-weight: 650; }
+  .cs-body ul {
+    margin: 0 0 1.5rem;
+    padding-left: 1.3rem;
+  }
+  .cs-body li {
+    font-size: 1.04rem;
+    line-height: 1.7;
+    color: var(--ink);
+    margin: 0 0 0.6rem;
+  }
+
+  footer.site-foot {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 2.5rem;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <a class="wordmark" href="index.html">Andrea Harter</a>
+  <a class="back-link" href="index.html#work">← Back to work</a>
+</header>
+
+<main>
+  <div class="cs-hero">
+    <p class="eyebrow">Case study</p>
+    <h1 class="cs-title">AI-Ready UX Knowledge System: Giving AI Tools a Memory They Can Be Trusted to Use</h1>
+    <p class="cs-meta">
+      <span>Senior UX Designer</span>
+      <span>Personal knowledge system for AI-assisted UX and product work</span>
+      <span>In daily use; a personal system, not a company-adopted program</span>
+    </p>
+  </div>
+
+  <article class="cs-body">
+    <h2>How this started</h2>
+    <p>I came across an idea from Andrej Karpathy, a well-known AI researcher: keep a personal collection of notes as memory for AI conversations. That way, you stop retyping the same background every time. Not long after he posted about it, I read the write-up, watched a few videos on the setup, and found it simple to get running.</p>
+    <p>The appeal was obvious. An AI tool is only as good as the information you give it, and I was either repeating myself constantly or trusting the AI's own memory of past conversations, which has real gaps.</p>
+    <p>I didn't try it at work first. Getting a new AI tool approved for work takes time. A personal genealogy project I was already deep into (tracing my family tree), using Claude Cowork, gave me a lower-stakes place to test the idea and see what actually worked.</p>
+
+    <h2>The problem</h2>
+    <p>My day job is UX design on a complex piece of business software. Nothing about that work lives in one place. The reasoning behind a decision might sit in a task-tracking tool, a design file, a meeting note, or just my own memory, and old rejected ideas, current experiments, and locked-in plans all blur together over time.</p>
+    <p>Once I started using AI to pull research together, draft specs for engineers, and review designs, a new problem showed up. An AI can sound completely confident while getting it wrong: stating a guess as fact, citing a decision that's since changed, or treating a half-formed idea as already approved.</p>
+    <p>A plain notes file didn't fix this, and neither did the AI's own memory of past chats, usually just a summary. Summaries smooth over exactly the details that matter: they can miss the moment an idea went from "maybe" to "yes," or make a rejected option sound like it's still on the table. I needed something closer to a filing system with proof attached: records I could hand an AI, and check myself, spelling out what I knew, how sure I was of it, when it stopped being current, and what not to assume beyond that.</p>
+
+    <h2>My first attempt</h2>
+    <p>I ran the genealogy version daily for a few weeks before building anything for work, and that turned out to matter. Family history research has its own version of the same problem: conflicting records, unproven theories, conclusions that need to hold up if someone checks them years later. Writing down decisions, open questions, and how confident I was in each piece of research, rather than just listing facts, turned out to be exactly the structure I'd need for my actual job. I wasn't inventing that approach at work. I was reusing something already tested.</p>
+    <p>Once I saw the structure working for genealogy, I set up the same knowledge base at work, not a document I fed in from scratch. I had AI help me build it, then refined it further for my actual job, UX and product work. It was valuable from the very first day, and that immediate payoff is what kept me refining it rather than stopping once it was good enough.</p>
+
+    <h2>Shaping it around my actual job</h2>
+    <p>The simplest way to describe what this became: a genuinely capable assistant with an excellent memory, taking notes for me. I still review everything before it goes in. This gets added. That's only an assumption, mark it as one. Write down the decision we just made, and why. Once something is recorded that way, the assistant can pull it back up with real precision. Because I controlled how it got written down, it's far less likely to lose an important detail, remember the wrong emphasis, or blur something I needed kept sharp.</p>
+    <p>Shaping it that way meant giving different kinds of information their own place, rather than one big pile:</p>
+    <ul>
+      <li>Decisions, with the alternatives considered, why we chose what we chose, and when to revisit it</li>
+      <li>Research findings, labeled by source and confidence, not treated as plain fact</li>
+      <li>Assumptions, each paired with what would prove it wrong</li>
+      <li>Fixed limits, open questions, and promises made, kept separate from settled decisions</li>
+      <li>Who's affected by a decision, and how we'll know if it worked</li>
+      <li>Reusable solutions, to avoid solving the same design problem twice</li>
+      <li>Notes on work still in progress, kept separate from the permanent record</li>
+      <li>Short project summaries, small enough for an AI to read without loading an entire history</li>
+    </ul>
+    <p>Two rules do most of the work of keeping this trustworthy. I never erase old reasoning: when a decision changes, I add a new dated entry rather than editing over the old one, and the trail survives. And I write explicit limits on records an AI could easily over-extend, telling it exactly where its authority to act stops.</p>
+    <p>I also had to decide what this system was not. A task-tracking tool owns what's being built right now. A design tool owns what it should look like. The document that spells out product requirements owns what it's supposed to do. My knowledge base sits beside those tools to hold the reasoning behind them, not to replace or duplicate them. When two sources disagree, it's built to flag that rather than quietly pick one, since quietly merging disagreeing sources is exactly the mistake I was trying to prevent.</p>
+
+    <h2>Putting it to work</h2>
+    <p><strong>Only reading what's needed.</strong> Rather than letting an AI dig through my entire knowledge base for every question, or lean on its own memory of past chats, I built a step-by-step lookup path: start with a short project summary, follow only the links a task needs, stop once there's enough to answer. Reading everything is reserved for questions that genuinely span projects. The records an AI cites are ones I can open and check myself, a different kind of trust than believing its recollection of an earlier chat.</p>
+    <p><strong>Getting the AI to actually update my files.</strong> My first tool at work, ChatGPT, couldn't write directly into our internal notes site or task-tracking tool. Keeping a document current meant rewriting it in chat, then manually swapping the old file for the new one, a real problem once AI sped up my pace of work: a decision could get made several times a day, and each one needed writing down while still fresh. I asked to switch to Codex specifically for its ability to write directly into those systems, and pairing that with records I still controlled fixed it. Write access alone wouldn't have been enough, and neither would the records alone. The combination is what mattered.</p>
+    <p><strong>Saving the "why" separately from the task.</strong> A task description trimmed for AI-assisted work can lose the smaller decisions, rejected options, and unusual situations that used to live in meeting notes or comments. I created a short companion note beside each trimmed task: what was decided, why, what we ruled out, and what shouldn't be assumed beyond that. It's copied into the knowledge base too, and the reasoning survives after the task closes.</p>
+    <p><strong>Two tools, two jobs.</strong> The knowledge base holds the why behind a decision. The task-tracking tool holds what needs to get built. An AI reviewing a build or handing off design work gets pointed to whichever one answers the question, rather than left to guess.</p>
+    <p><strong>The same idea, applied to research.</strong> A related part of the system handles individual pieces of research evidence, each labeled by source and confidence, the actual problem kept separate from whatever solution someone requested, and a person always signing off before anything counts as accepted. It ran on a small, deliberately limited set of examples: proof the process works, not proof it scales.</p>
+
+    <h2>Costs and tradeoffs</h2>
+    <p>Keeping this current takes real, ongoing work. Records need upkeep, and the lookup paths need occasional review as the system grows, or the AI starts taking the long way to an answer.</p>
+    <p>There was also a surprise cost. Cutting repetitive background was supposed to use fewer of an AI tool's resources, not more. In practice, Codex burned through a lot of tokens: the credits AI tools spend behind the scenes, similar to data on a phone plan. About a month in, I moved that work to Cursor, a different tool that searches a structured knowledge base more efficiently and costs meaningfully less. That says as much about how a specific AI tool handles structured information as about the knowledge base itself.</p>
+    <p>I also learned exactly where a person has to stay involved. Turning a research finding into an accepted conclusion, resolving two sources that disagree, and any decision that changes what we're building all require a person's sign-off. The system surfaces evidence and flags disagreements. It doesn't make the call.</p>
+
+    <h2>Anyone could use this</h2>
+    <p>The approach isn't specific to my company or product. Separate decisions from evidence, assumptions, and open questions, then set clear limits on what an AI can assume from each. That works for any complicated project where people need an AI to have a reliable memory.</p>
+    <p>It's also easy to set up. All you need is a tool that can write files directly to your own device, like Claude Cowork, Codex, or Cursor. No special infrastructure required.</p>
+  </article>
+</main>
+
+<footer class="site-foot">© 2026 Andrea Harter. Built by hand, hosted on GitHub Pages.</footer>
+
+</body>
+</html>
