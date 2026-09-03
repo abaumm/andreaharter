@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Behavioural Archetypes — Andrea Harter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Building AI personas grounded in real customer evidence, instead of fictional job-title personas, to give an AI agent a more disciplined way to evaluate an enterprise product.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@380..800&family=Geist+Mono:wght@450..600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #fdfcfa;
+    --canvas-tint: #f8f6f1;
+    --ink: #201c29;
+    --ink-soft: #6b6478;
+    --line: #ece8e0;
+    --coral: #ff6943;
+    --coral-text: #c74a22;
+    --gold: #ffd23f;
+    --violet: #6b50f7;
+    --lavender: #c8a2fa;
+    --teal: #14d9c4;
+    --teal-text: #1a7a76;
+    --magenta: #e619b0;
+    --magenta-text: #d219a2;
+    --focus: #6b50f7;
+
+    --font-display: "Geist", system-ui, sans-serif;
+    --font-body: "Geist", system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --canvas: #17141f;
+      --canvas-tint: #1c1826;
+      --ink: #f3f0ea;
+      --ink-soft: #a89fbb;
+      --line: #2c2738;
+      --coral: #ff7e52;
+      --coral-text: #ff8a5c;
+      --gold: #ffdb70;
+      --violet: #9c86ff;
+      --lavender: #d3b8fb;
+      --teal: #4de8d4;
+      --teal-text: #4de8d4;
+      --magenta: #ff5cc7;
+      --magenta-text: #ff5cc7;
+    }
+  }
+  :root[data-theme="dark"] {
+    --canvas: #17141f;
+    --canvas-tint: #1c1826;
+    --ink: #f3f0ea;
+    --ink-soft: #a89fbb;
+    --line: #2c2738;
+    --coral: #ff7e52;
+    --coral-text: #ff8a5c;
+    --gold: #ffdb70;
+    --violet: #9c86ff;
+    --lavender: #d3b8fb;
+    --teal: #4de8d4;
+    --teal-text: #4de8d4;
+    --magenta: #ff5cc7;
+    --magenta-text: #ff5cc7;
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+
+  header.site-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2.25rem clamp(1.25rem, 4vw, 3rem) 0;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+  .back-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 2px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .back-link:hover, .back-link:focus-visible { color: var(--coral-text); border-color: var(--coral-text); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem); }
+
+  .cs-hero {
+    max-width: 42rem;
+    padding: clamp(3rem, 7vw, 5rem) 0 clamp(2rem, 4vw, 3rem);
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.03em;
+    color: var(--ink-soft);
+    margin: 0 0 1.25rem;
+  }
+  h1.cs-title {
+    font-family: var(--font-display);
+    font-weight: 650;
+    font-size: clamp(2rem, 4.4vw, 2.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    margin: 0 0 1.5rem;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .cs-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.01em;
+    color: var(--ink-soft);
+  }
+  .cs-meta span:not(:last-child)::after {
+    content: "·";
+    margin-left: 1.25rem;
+    opacity: 0.4;
+  }
+
+  .cs-body {
+    max-width: 42rem;
+    padding-bottom: clamp(4rem, 8vw, 6rem);
+  }
+  .cs-body h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.3rem, 2.4vw, 1.55rem);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin: clamp(2.75rem, 5vw, 3.5rem) 0 1.1rem;
+  }
+  .cs-body p {
+    font-size: 1.04rem;
+    line-height: 1.75;
+    color: var(--ink);
+    margin: 0 0 1.3rem;
+  }
+  .cs-body p:first-of-type { margin-top: 0; }
+  .cs-body strong { color: var(--ink); font-weight: 650; }
+
+  footer.site-foot {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 1.5rem clamp(1.25rem, 4vw, 3rem) 2.5rem;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<header class="site-head">
+  <a class="wordmark" href="index.html">Andrea Harter</a>
+  <a class="back-link" href="index.html#work">← Back to work</a>
+</header>
+
+<main>
+  <div class="cs-hero">
+    <p class="eyebrow">Case study</p>
+    <h1 class="cs-title">Behavioural Archetypes: Teaching an AI to Think Like a Real User</h1>
+    <p class="cs-meta">
+      <span>Senior UX Designer</span>
+      <span>Enterprise case-management platform (B2B SaaS)</span>
+      <span>Informal pilot, shared with my manager and one colleague; not a company-adopted program</span>
+    </p>
+  </div>
+
+  <article class="cs-body">
+    <h2>The challenge</h2>
+    <p>Ask an AI agent to review your product "as a user," and it will happily hand you feedback. Confident, plausible, and often wrong.</p>
+    <p>It invents things: motives a person never had, a rule that doesn't exist, a workload the screen never showed. Made-up personas built from job titles have the same problem, just smaller. A persona named "Case Manager" is a label with assumptions stapled on, not a real picture of what that person does all day.</p>
+    <p>I ran into this fast, because the software I design doesn't forgive vague thinking. A single record can hold dozens of fields, several people, and multiple stages of progress. Evaluate that with a fuzzy persona, or a fuzzy AI agent, and you get fuzzy findings. I wanted to know if I could do better, both in how I research real users and in how I test with AI.</p>
+
+    <h2>The hypothesis</h2>
+    <p>My idea: build behavioural profiles from real evidence, add clear rules against guessing, and the evaluation gets sharper than a generic "put yourself in the user's shoes" prompt.</p>
+    <p>Not a persona with a name and a stock photo. A clear pattern of what someone is trying to do, what they decide, and what information they need, pulled from what real customers and coworkers had actually told us, about our own product specifically, not a generic industry user. I wrote down the confidence level and the gaps up front. That's the difference between a behavioural profile and an ordinary persona: one admits what it doesn't know.</p>
+    <p>Two bigger questions sat behind this pilot. First: could a genuinely evidence-based persona eventually run regular feedback checks on its own, catching gaps between the deeper research we already do? To be precise, that's not AI making product decisions or shipping changes unsupervised; a human stays in that loop, full stop. It's AI standing in as a user, supplementing real research, never replacing it. Second: is that even affordable? Having an AI agent click around and use the product in a browser, the way a person would, costs real money in tokens. Both questions are still open. Two test runs told me the idea works, not what it costs at scale.</p>
+
+    <h2>The approach</h2>
+    <p>I gathered evidence from customer conversations, submitted feedback, and internal notes about how people actually use the product, and looked for repeating behaviour patterns rather than job titles. Three early profiles came out of that first pass.</p>
+    <p>One, the Operational Supervisor, was someone who scans a pile of active work looking for cases that are stuck, assigned to the wrong person, or at risk, and decides where to step in. I wrote up its goals, how it typically makes decisions, and what tends to trigger a false alarm, plus guidance for using it: a person reviewing a spec, a person reviewing a design, an AI agent acting the part directly. The instruction for the AI was simple: report what you're unsure about, don't treat a guess as a fact.</p>
+    <p>Then I tested it: a read-only task, a safe test copy of the product, one AI agent playing the Operational Supervisor on a scenario. Its job was to find a case that might need attention and recommend the smallest possible next step. No data changes, no messages, no reassignments. Just watching, and a reasoned recommendation.</p>
+
+    <h2>Calibration one: catching a false alarm</h2>
+    <p>The case list only had a few records. One had no owner and a blank status, which looked, at first glance, exactly like the neglected case the profile was built to catch. The AI treated that as a lead, not a conclusion, and opened the record to check. The case had been deleted, which explained the blank fields completely. When it filtered the list down to active cases, none were left. It correctly recommended doing nothing.</p>
+    <p>That told me the profile was steering real decisions, not just setting a tone: start with the full list, treat a blank field as something to check rather than proof of a problem, look for an ordinary explanation before acting.</p>
+    <p>The limit was just as clear. With zero active cases in the test set, the AI never got to make the call I actually cared about: is an active case actually stuck, or moving along fine. I hadn't given it a real decision yet.</p>
+
+    <h2>Calibration two: a real judgment call</h2>
+    <p>About a week later, I added a realistic active case and ran the same task again. This time there was something to judge: a complaint, no owner, three claims logged when it was opened, no activity since. The activity log showed someone had looked at the record twice in the days after. The AI read that correctly as someone noticing the case, not someone working it (a distinction a lot of dashboards still get wrong). Its action history was empty, and the only next step the software offered was to close it. The risk-level fields were blank.</p>
+    <p>Rather than escalate or reassign, the AI recommended a light check: ask whoever handles new cases whether it was meant to sit unassigned, who was supposed to review it, and whether the missing fields still needed filling in. It didn't assume there was no good reason for the gap, like a hold or work happening somewhere else. That's the proportionate response I wanted from the profile, and it only became testable once the data gave the AI something real to work with.</p>
+
+    <h2>What the product revealed</h2>
+    <p>Both runs turned up real gaps. The case list didn't show, in one place, the things a supervisor actually needs: recent activity, how long a case had sat in its status, the next expected step, any known hold. Status showed as "Open" in more than one spot, and how that related to the case's internal stage wasn't clear. The list also briefly flashed an empty-results message before real records had loaded. For a second it looked like there was nothing there.</p>
+    <p>None of this proves a compliance problem or a fix every customer needs. It's a short list of specific things I watched happen, across two test runs.</p>
+
+    <h2>What the method revealed</h2>
+    <p>The behavioural profile changed real behaviour, not just tone. It changed what the AI looked at first, what it treated as a warning sign, how careful it was before recommending anything. The rule against false alarms mattered most: in both runs, the AI held off on a judgment until it had checked for a normal explanation.</p>
+    <p>What I can't say yet is how much of that caution came from the profile itself, versus the detailed instructions in the test prompt. Two tests, on one profile, run by me, aren't enough to prove this beats an ordinary review by a person, or that the caution came from the profile rather than my instructions. I still need a real comparison: the same task, run as an ordinary review, and again with a second, different profile, to see if the findings actually differ.</p>
+    <p>A few rules kept the AI honest along the way. It had to keep facts and guesses separate in every report, and say when something was missing rather than invent a policy, permission, or workload that wasn't shown. When it did recommend something, it picked the smallest possible action, not the most thorough one, and every step stayed on the record, which let me check the reasoning myself rather than take it on faith.</p>
+
+    <h2>Outcome and next step</h2>
+    <p>This was a pilot I ran on my own and shared informally, not something my company has adopted. I recorded the second test, wrote a short summary, and shared both with my manager and one coworker who works on AI features. Neither has given me a product decision to report yet.</p>
+    <p>The profiles themselves are still rough drafts, not proven facts. I don't know how common this behaviour actually is across our real users, and two tests don't prove this method beats a solid review done by a person. What they do show: the profile was specific enough to change how the AI worked, and careful enough that it didn't invent the parts of the story the product didn't show. That's a smaller claim than "AI-powered testing," and one I can stand behind.</p>
+    <p>The bigger goal, a recurring AI feedback loop that supports real user research without replacing it, is still just a goal. This pilot was the first check on whether the idea, and the cost, were even realistic. Both look promising enough to keep going. Neither is proven enough to build on yet. The next test on my list: the same task, done once as an ordinary review and once with a second, different profile. That's how I find out what this method actually adds, rather than assume it.</p>
+  </article>
+</main>
+
+<footer class="site-foot">© 2026 Andrea Harter. Built by hand, hosted on GitHub Pages.</footer>
+
+</body>
+</html>

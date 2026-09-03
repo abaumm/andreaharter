@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Collapsible Sections — Andrea Harter</title>
+<title>Collapsible Sections · Andrea Harter</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta name="description" content="Turning a one-line request to collapse form sections into a full interaction system for dense enterprise case-management forms.">
@@ -186,51 +186,57 @@
 <main>
   <div class="cs-hero">
     <p class="eyebrow">Case study</p>
-    <h1 class="cs-title">Collapsible Sections: An Interaction System for Dense Case-Management Forms</h1>
+    <h1 class="cs-title">Collapsible Sections: How One Simple Feature Request Became a Full System</h1>
     <p class="cs-meta">
       <span>Senior UX Designer</span>
-      <span>Enterprise case-management platform (B2B SaaS)</span>
-      <span>Shipped to production; accessibility verification and adoption data not yet completed</span>
+      <span>Business software companies use internally to manage complex case files</span>
+      <span>Live in production. Accessibility testing and real usage numbers aren't finished yet.</span>
     </p>
   </div>
 
   <article class="cs-body">
     <h2>The challenge</h2>
-    <p>Add a chevron. Remember the state. Done.</p>
-    <p>That's what the request sounded like: let people collapse the form sections they weren't using. Our case records could carry a dozen of them: intake details, involved parties, financial fields, compliance checkboxes, embedded record grids, internal notes with restricted visibility. Everything sat open all the time, so finding the one section you needed meant scrolling past ten you didn't.</p>
-    <p>That request kicked off the project. The scope didn't stay that small for long.</p>
+    <p>Add a small arrow icon. Let people click it to close a section. Remember which sections they closed. Done.</p>
+    <p>That's what the request sounded like: let people close, or "collapse," parts of a form they weren't using right then. Think of a "case" as one record, like a single customer file. Each case's form could have a dozen sections in it: intake details, the people involved, financial fields, a compliance checklist, tables of related records, and internal notes only some people could see. Every section stayed open all the time. Finding the one you needed meant scrolling past ten you didn't.</p>
+    <p>That request kicked off the project. The project didn't stay that small for long.</p>
 
     <h2>The hidden complexity</h2>
-    <p>Once you let people hide content, you've also let them hide problems. A closed section might be hiding a required field that's blocking submission. It might also carry a note that some of its content is visible to an external party on the case. Those are unrelated concerns, a validation issue and a visibility flag, but if both surface as the same small icon on a collapsed section, a user has no way to tell which one they're looking at until they open it up. State that persists across a session is convenient until it leaks into the wrong context and a different case opens looking pre-collapsed for no reason anyone can trace. A printed record is a legal document, and it cannot go out missing sections just because someone had them collapsed on screen.</p>
-    <p>None of that gets fixed by a chevron. Fixing it meant treating collapse and expand as a system with rules.</p>
+    <p>Once you let people hide content, you've also let them hide problems.</p>
+    <p>A closed section might be hiding a required field someone forgot to fill in, one that's blocking them from saving the form. Or it might be flagging that some of its content is visible to an outside party on the case. Those are two completely different problems. But if both show up as the same small warning icon on a closed section, a person has no way to tell which one they're looking at until they open it back up.</p>
+    <p>Remembering which sections someone closed is convenient, until that memory follows them into the wrong case. Open a different case and find sections already closed for no reason you can explain, and you might miss something important inside one of them.</p>
+    <p>A printed copy of a case is a legal document. It can't be missing sections just because someone had them closed on their screen.</p>
+    <p>None of that gets fixed by an arrow icon. Fixing it meant building collapsing and expanding as a real system with rules.</p>
 
-    <h2>Mapping the system</h2>
-    <p>Six pieces had to hold together as one system. Nine separate implementation tickets would have let them contradict each other. Default state. Expand and collapse behavior. Validation inside hidden content. Persistence, and where it had to stop. How nested sections and embedded record grids inherited all of it. And print, which ignores every other rule above and just shows everything.</p>
-    <p>Picture a sample intake form: a Case Overview section, an Involved Parties section with an embedded grid of related records, a Compliance Checklist section with several required fields, and an internal-notes section visible only to certain roles. Each needed to answer the same six questions, even though they hold completely different kinds of content.</p>
-    <p>The system also had to work for people who don't use a mouse. Collapsed content isn't reachable by keyboard tab order until its section is expanded, and section headings are only focusable when they're interactive or focus reveals something meaningful. Small rule. Easy to skip if nobody writes it down before implementation starts.</p>
+    <h2>Six things that had to work together</h2>
+    <p>Hand this out as nine separate tasks to nine different people, and the pieces end up contradicting each other. I mapped it as one system, with six pieces that all had to agree:</p>
+    <p>Whether a section starts open or closed by default. What happens when someone clicks to open or close it. How a form error shows up inside a section that's closed. Remembering what someone closed, and knowing exactly when to forget it. How sections nested inside other sections, or tables embedded inside a section, follow the same rules. And printing, which ignores all of that and just shows everything, open or not.</p>
+    <p>Picture a sample form: an overview section, a section listing everyone involved with a table of related records inside it, a compliance checklist section with several required fields, and a notes section only some people can see. All four had to follow the same six rules, even though they're completely different kinds of content.</p>
+    <p>The system also had to work for people who move through a form using a keyboard rather than a mouse. If a section is closed, nothing inside it should be reachable by pressing Tab to move through the form. A section's title should only stop your cursor on Tab if clicking it actually does something, not just because it's sitting there. Small rule. Easy to skip if nobody writes it down before the engineers start building.</p>
 
-    <h2>The indicator model: awareness, blocking, and Party Access</h2>
-    <p><strong>Awareness</strong> is non-blocking. It tells a user there's something worth noticing inside a collapsed section, without saying they've done anything wrong. <strong>Blocking validation</strong> is different in kind, not just in urgency: the form cannot be completed until something changes, and it needed to read as more serious than awareness at a glance. <strong>Party Access</strong> is a third thing entirely, a visibility or permission signal rather than a validation state.</p>
-    <p>Early explorations blurred these three together into one icon that could mean any of them depending on context. Keeping them apart is the part I pushed hardest on. A user looking at that icon needs to know whether it means "worth a glance," "fix this before you can save," or "you don't have access," and one shape can't tell them which.</p>
-    <p>We landed on a shared icon family that shifts between an outlined treatment for awareness and a filled treatment for blocking, paired with a color change, so the distinction doesn't rely on color alone. Party Access stays visually and functionally separate, sitting with the other tab-level icons rather than folded into the status indicator. A proposed fourth signal, for fields that appear later because of a workflow change, was scoped out of this release: its trigger and dismissal logic wasn't ready, and shipping it half-specified would have created more confusion than it solved.</p>
+    <h2>Three different warnings, and why one icon can't cover all of them</h2>
+    <p><strong>Awareness</strong> means "there's something worth noticing in here," nothing more. It doesn't mean the person did anything wrong. <strong>Blocking</strong> means the opposite: the form can't be saved until something changes, and it needs to look more urgent than awareness at a glance. <strong>Party Access</strong> is neither of those. It just means an outside party can see part of this section, which has nothing to do with errors at all.</p>
+    <p>Early versions used one icon for all three. I pushed hard to split them apart, because a person looking at that icon needs to know whether it means "worth a glance," "fix this before you can save," or "someone outside the company can see this," and one shape can't tell them which.</p>
+    <p>We ended up with a shared icon that changes in two ways at once: an outline for awareness, a solid fill for blocking, plus a color change on top of that. That way the two don't depend on color alone to look different. Party Access kept its own separate icon entirely. We also considered a fourth icon, for fields that show up later because of some change elsewhere in the process, and left it out of this release. The rules for when it would appear and disappear weren't settled, and shipping it half-finished would have confused people more than not having it at all.</p>
 
-    <h2>Timing: why errors appear after Save, not before</h2>
-    <p>A form that shows red errors before you've typed anything doesn't feel careful. It feels broken. Container-level blocking indicators stay silent on a brand-new case and only activate after the first save attempt finds incomplete required fields. Required-field markers stay visually neutral; an empty field gets red inline text underneath it instead.</p>
-    <p>An error, in this model, is a signal tied to an action a person took, not a default condition of an untouched page. Getting the timing right meant a case creator's first experience is just a blank form, while someone who saves with real gaps gets a signal impossible to miss, including a path to expand whatever section is hiding the problem.</p>
+    <h2>Why errors don't show up until after you click Save</h2>
+    <p>A form covered in red errors before you've typed a single word doesn't feel careful. It feels broken.</p>
+    <p>The red warning icon on a section stays off on a brand-new case, and only turns on after someone tries to save with required fields still empty. The little marker next to a required field, like an asterisk, never turns red. An empty field gets a short red message underneath it, something like "Required."</p>
+    <p>In this system, an error only shows up because of something a person did, not just because the page loaded. That's why a brand-new case starts out looking like a plain blank form. Someone who saves with real gaps left gets a warning that's impossible to miss, plus a way to jump straight to whatever section is hiding the problem.</p>
 
-    <h2>State design: why persistence is scoped per case</h2>
-    <p>Remembering that someone had a section collapsed is a real usability win when they return to the same case. It becomes a liability the moment it leaks into a different case: sections start looking collapsed for no reason anyone can explain, and a user can miss content because a different case's state got applied to this one.</p>
-    <p>We scoped state to the specific case and the specific user's browser context, persisting across tabs, windows, refreshes, and logouts, but never traveling from one case to another. That boundary also raised QA questions: what happens when someone clears browser storage, switches users on a shared machine, or opens a private window. Those are edge cases you only catch by asking what persistence is for, not just whether it works.</p>
+    <h2>Why the memory of closed sections only applies to one case</h2>
+    <p>Remembering which sections someone closed is genuinely useful, as long as they're back in the same case. It turns into a real problem the moment that memory leaks into a different case. Sections start out closed for no reason anyone can explain, and a person can miss content in a completely different case because it inherited a memory that belonged to the last one.</p>
+    <p>We tied that memory to one specific case and one specific person's browser. It survives closing and reopening browser tabs, closing and reopening the whole browser, refreshing the page, and logging out and back in. It never carries over from one case to another. That boundary also raised a set of testing questions: what happens if someone clears their browser's saved data, or two people share a computer and log in as different users, or someone opens the form in a private browsing window, like Incognito mode. You only catch questions like those by asking what the memory is actually for, not just whether it technically works.</p>
 
-    <h2>Delivery: keeping the system coherent as sources drifted</h2>
-    <p>Partway through development, our design file fell behind. Engineering and product decisions kept moving in our work-tracking system faster than the visual specs could be updated, and two documents that used to agree stopped agreeing.</p>
-    <p>I keep a running knowledge base of every decision as it gets made, and I use AI-assisted tools to turn that into updated tickets fast, often right after the decision is made. That speed is what actually kept the drift from spreading: a developer, or an AI tool, reading the ticket got the current accepted behavior even while the design file was still catching up. I also wrote down explicitly what should not be inferred from the stale file, so a developer or an AI-assisted tool wouldn't reach into an outdated version and reintroduce a deferred idea as current scope.</p>
-    <p>Without that, a developer building against the old file would have shipped the wrong icon treatment and called it done.</p>
-    <p>The cross-functional team, including engineering and QA, tested a concrete set of conditions this model made visible: different cases for the same user, refresh and logout behavior, cleared storage and private browsing, nested sections with long labels, the moment right after a first save attempt, and how the record prints.</p>
+    <h2>Keeping the design file and the real plan from disagreeing</h2>
+    <p>Partway through the project, our design file (the document showing what everything should look like) fell behind. Decisions kept changing in our project-tracking tool faster than anyone could update the pictures to match. Two documents that used to say the same thing stopped agreeing with each other.</p>
+    <p>I keep a running personal record of every decision as it's made, and use AI-assisted tools to turn that into an updated task entry fast, often right after the decision happens. That speed is what actually kept the mismatch from spreading: any engineer, or any AI tool, reading the task entry got the current, correct answer, even while the picture-based document was still out of date. I also wrote down exactly what not to assume from the old document. That kept anyone, human or AI, from pulling an outdated idea back out of it and treating it as current.</p>
+    <p>Without that, an engineer building from the old document would have shipped the wrong icon and called it finished.</p>
+    <p>The team, engineers and testers together, checked a specific list of situations this model made visible: the same person looking at different cases, what happens on refresh and logout, cleared browser data and private browsing, sections nested inside each other with long titles, the moment right after someone's first save attempt, and how the whole thing looks printed.</p>
 
-    <h2>Outcome and limitations</h2>
-    <p>Collapsible Sections shipped to production. The team built a coherent behavior model spanning configuration, interactive state, validation, persistence, and print. Indicator meanings, timing rules, and scope boundaries are documented clearly enough for engineering and QA to build and test against. We expect faster scanning of long forms, lower cognitive load, fewer required fields missed inside collapsed sections, and cleaner print output. Screen reader and keyboard behavior across expanded and collapsed states shaped the decisions from the start.</p>
-    <p>Add a chevron. Remember the state. Done. That's still what it looks like from the outside. Look closer and there are six behaviors that had to agree with each other, three indicator types that aren't allowed to blur into one, and a save-timing rule that took a development sync to get right.</p>
+    <h2>What actually happened, and what's still unknown</h2>
+    <p>Collapsible Sections is live in production now. The team built one complete, consistent set of rules covering how sections get set up, how they behave when clicked, how errors show up inside them, what gets remembered, and how everything prints. What each icon means, when warnings appear, and what's in or out of this version are all written down clearly enough for engineers and testers to build and check against.</p>
+    <p>We expect people to scan long forms faster, feel less overwhelmed by them, miss fewer required fields hidden inside closed sections, and get cleaner printouts. Screen readers (the software blind users rely on to have a page read aloud) and keyboard use both shaped these decisions from the very start, for sections open and closed alike.</p>
+    <p>Add a small arrow icon. Remember which sections someone closed. Done. That's still what it looks like from the outside. Look closer, and there are six behaviors that all had to agree with each other, three warning icons that aren't allowed to blur into one, and a rule about exactly when error messages appear that took a full team discussion to get right.</p>
   </article>
 </main>
 
