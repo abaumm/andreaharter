@@ -27,8 +27,9 @@
     --focus: #6b50f7;
     --script: #5f78e0;
     --canvas-rgb: 253, 252, 250;
-    --blob-teal: #a8e8de;
-    --blob-magenta: #f4b8d9;
+    --wash-strong: rgba(255, 105, 67, 0.22);
+    --wash-soft: rgba(255, 105, 67, 0.08);
+    --grain-svg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9 0.04' numOctaves='2' seed='11' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 0.412  0 0 0 0 0.263  0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url%28%23n%29'/></svg>");
 
     --font-display: "Geist", system-ui, sans-serif;
     --font-body: "Geist", system-ui, sans-serif;
@@ -54,8 +55,9 @@
       --magenta-text: #ff5cc7;
       --script: #93a4ff;
       --canvas-rgb: 23, 20, 31;
-      --blob-teal: #b6ede4;
-      --blob-magenta: #f6c5e0;
+      --wash-strong: rgba(255, 126, 82, 0.19);
+      --wash-soft: rgba(255, 126, 82, 0.07);
+      --grain-svg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9 0.04' numOctaves='2' seed='11' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 0.494  0 0 0 0 0.322  0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url%28%23n%29'/></svg>");
     }
   }
   :root[data-theme="dark"] {
@@ -75,8 +77,9 @@
     --magenta-text: #ff5cc7;
     --script: #93a4ff;
     --canvas-rgb: 23, 20, 31;
-    --blob-teal: #b6ede4;
-    --blob-magenta: #f6c5e0;
+    --wash-strong: rgba(255, 126, 82, 0.19);
+    --wash-soft: rgba(255, 126, 82, 0.07);
+    --grain-svg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9 0.04' numOctaves='2' seed='11' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 1  0 0 0 0 0.494  0 0 0 0 0.322  0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url%28%23n%29'/></svg>");
   }
 
   * { box-sizing: border-box; }
@@ -141,12 +144,36 @@
     padding: 2.25rem clamp(1.25rem, 4vw, 3rem) 0;
   }
   .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px;
+    margin: -6px;
+    border-radius: 6px;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .wordmark svg { display: block; overflow: visible; flex: none; }
+  .wordmark .mark-half {
+    fill: none;
+    stroke: var(--ink-soft);
+    stroke-width: 9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.2s ease;
+  }
+  .wordmark-text {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 1.05rem;
-    text-decoration: none;
     letter-spacing: -0.01em;
+    color: var(--ink);
+    transition: color 0.2s ease;
   }
+  .wordmark:hover .mark-half,
+  .wordmark:focus-visible .mark-half { stroke: var(--coral-text); }
+  .wordmark:hover .wordmark-text,
+  .wordmark:focus-visible .wordmark-text { color: var(--coral-text); }
   nav.site-nav ul {
     list-style: none;
     display: flex;
@@ -179,81 +206,26 @@
     justify-content: center;
   }
 
-  .hero-shapes {
+  .hero-wash,
+  .hero-wash-grain {
     position: absolute;
-    inset: 4% -10% -8%;
-    z-index: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 320px;
     pointer-events: none;
+    z-index: 0;
+    -webkit-mask-image: radial-gradient(ellipse 62% 100% at 50% -20%, black 0%, black 30%, transparent 72%);
+    mask-image: radial-gradient(ellipse 62% 100% at 50% -20%, black 0%, black 30%, transparent 72%);
   }
-  .blob {
-    position: absolute;
-    filter: blur(38px);
-    opacity: var(--op, 0.6);
-    animation: drift-wide var(--ddur, 15s) ease-in-out infinite,
-               pulse var(--dur, 8s) ease-in-out infinite,
-               blob-morph var(--mdur, 11s) ease-in-out infinite;
-    transform-origin: center;
+  .hero-wash {
+    filter: blur(6px);
+    background: linear-gradient(to bottom, var(--wash-strong) 0%, transparent 78%);
   }
-
-  .blob-1 {
-    width: min(39vw, 470px); aspect-ratio: 1;
-    top: -4%; right: -8%;
-    background: var(--coral);
-    --dur: 10s; --ddur: 13s; --mdur: 12s;
-    --op: 0.65;
-  }
-  .blob-2 {
-    width: min(25vw, 300px); aspect-ratio: 1;
-    top: 36%; right: 16%;
-    background: var(--gold);
-    --dur: 8s; --ddur: 11s; --mdur: 9.5s;
-    animation-delay: -5s, -8s, -4s;
-    --op: 0.58;
-  }
-  .blob-3 {
-    width: min(19vw, 220px); aspect-ratio: 1;
-    top: 2%; right: 22%;
-    background: var(--blob-teal);
-    --dur: 7s; --ddur: 9.5s; --mdur: 8s;
-    animation-delay: -10s, -3s, -6s;
-    --op: 0.55;
-  }
-  .blob-4 {
-    width: min(14vw, 150px); aspect-ratio: 1;
-    top: 54%; right: 8%;
-    background: var(--blob-magenta);
-    --dur: 6s; --ddur: 8.5s; --mdur: 7s;
-    animation-delay: -6s, -12s, -2s;
-    --op: 0.55;
-  }
-
-  @keyframes drift-wide {
-    0%   { transform: translate(0, 0) scale(1); }
-    25%  { transform: translate(-7%, 5%) scale(1.14); }
-    50%  { transform: translate(-2%, -6%) scale(0.9); }
-    75%  { transform: translate(6%, 3%) scale(1.1); }
-    100% { transform: translate(0, 0) scale(1); }
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: var(--op, 0.6); }
-    50%      { opacity: calc(var(--op, 0.6) * 1.35); }
-  }
-  @keyframes blob-morph {
-    0%, 100% { border-radius: 50%; }
-    33%      { border-radius: 42% 58% 63% 37% / 46% 40% 60% 54%; }
-    66%      { border-radius: 60% 40% 38% 62% / 38% 62% 42% 58%; }
-  }
-
-  .hero-scrim {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    pointer-events: none;
-    background: linear-gradient(100deg,
-      rgba(var(--canvas-rgb), 1) 0%,
-      rgba(var(--canvas-rgb), 0.96) 40%,
-      rgba(var(--canvas-rgb), 0.55) 58%,
-      rgba(var(--canvas-rgb), 0) 76%);
+  .hero-wash-grain {
+    background-image: var(--grain-svg);
+    background-size: 170px 170px;
+    opacity: 0.8;
   }
 
   .hero-copy {
@@ -341,10 +313,6 @@
     margin-left: 1.25rem;
     color: var(--ink-soft);
     opacity: 0.4;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .blob { animation: none !important; }
   }
 
   /* ---------- Shared section rhythm ---------- */
@@ -978,8 +946,17 @@
 
 <a class="skip-link" href="#main">Skip to main content</a>
 
+<div class="hero-wash" aria-hidden="true"></div>
+<div class="hero-wash-grain" aria-hidden="true"></div>
+
 <header class="site-head">
-  <a class="wordmark" href="#top">Andrea Harter</a>
+  <a class="wordmark" href="#top" aria-label="Andrea Harter, home">
+    <svg width="34" height="17" viewBox="-75 -35 150 70" aria-hidden="true" focusable="false">
+      <path class="mark-half" d="M 0.00,0.00 C -0.16,-0.16 -0.63,-0.63 -0.95,-0.95 C -1.27,-1.27 -1.59,-1.59 -1.91,-1.90 C -2.23,-2.22 -2.54,-2.54 -2.86,-2.85 C -3.18,-3.17 -3.51,-3.48 -3.83,-3.80 C -4.15,-4.11 -4.47,-4.43 -4.80,-4.74 C -5.13,-5.05 -5.45,-5.37 -5.78,-5.68 C -6.11,-5.99 -6.44,-6.30 -6.77,-6.61 C -7.11,-6.92 -7.44,-7.22 -7.78,-7.53 C -8.12,-7.84 -8.46,-8.14 -8.80,-8.44 C -9.14,-8.75 -9.49,-9.05 -9.84,-9.35 C -10.19,-9.65 -10.54,-9.95 -10.90,-10.24 C -11.25,-10.54 -11.61,-10.83 -11.98,-11.12 C -12.34,-11.41 -12.71,-11.70 -13.08,-11.98 C -13.45,-12.27 -13.83,-12.55 -14.21,-12.83 C -14.59,-13.11 -14.97,-13.38 -15.36,-13.65 C -15.75,-13.92 -16.14,-14.19 -16.54,-14.45 C -16.94,-14.72 -17.34,-14.98 -17.75,-15.23 C -18.16,-15.49 -18.58,-15.74 -19.00,-15.98 C -19.42,-16.22 -19.84,-16.46 -20.27,-16.70 C -20.70,-16.93 -21.14,-17.16 -21.58,-17.38 C -22.02,-17.60 -22.47,-17.81 -22.92,-18.02 C -23.38,-18.23 -23.84,-18.43 -24.30,-18.62 C -24.77,-18.81 -25.24,-18.99 -25.72,-19.17 C -26.20,-19.34 -26.68,-19.51 -27.17,-19.67 C -27.66,-19.82 -28.16,-19.97 -28.66,-20.10 C -29.16,-20.24 -29.67,-20.36 -30.18,-20.48 C -30.69,-20.59 -31.21,-20.69 -31.74,-20.78 C -32.26,-20.87 -32.79,-20.95 -33.32,-21.01 C -33.85,-21.07 -34.39,-21.12 -34.93,-21.16 C -35.47,-21.19 -36.02,-21.21 -36.57,-21.21 C -37.12,-21.22 -37.67,-21.20 -38.23,-21.17 C -38.78,-21.14 -39.34,-21.10 -39.89,-21.03 C -40.45,-20.97 -41.01,-20.89 -41.57,-20.78 C -42.13,-20.68 -42.69,-20.56 -43.24,-20.42 C -43.80,-20.28 -44.35,-20.12 -44.90,-19.94 C -45.46,-19.76 -46.00,-19.56 -46.55,-19.34 C -47.09,-19.11 -47.63,-18.87 -48.15,-18.60 C -48.68,-18.34 -49.21,-18.05 -49.72,-17.74 C -50.23,-17.43 -50.73,-17.10 -51.22,-16.75 C -51.71,-16.40 -52.19,-16.03 -52.65,-15.63 C -53.11,-15.24 -53.57,-14.82 -54.00,-14.39 C -54.43,-13.95 -54.84,-13.50 -55.24,-13.02 C -55.63,-12.55 -56.01,-12.05 -56.36,-11.54 C -56.72,-11.03 -57.05,-10.50 -57.36,-9.96 C -57.67,-9.42 -57.95,-8.86 -58.21,-8.28 C -58.47,-7.71 -58.70,-7.12 -58.91,-6.53 C -59.11,-5.93 -59.29,-5.32 -59.44,-4.71 C -59.59,-4.10 -59.71,-3.47 -59.80,-2.85 C -59.89,-2.22 -59.95,-1.58 -59.98,-0.95 C -60.01,-0.32 -60.01,0.32 -59.98,0.95 C -59.95,1.58 -59.89,2.22 -59.80,2.85 C -59.71,3.47 -59.59,4.10 -59.44,4.71 C -59.29,5.32 -59.11,5.93 -58.91,6.53 C -58.70,7.12 -58.47,7.71 -58.21,8.28 C -57.95,8.86 -57.67,9.42 -57.36,9.96 C -57.05,10.50 -56.72,11.03 -56.36,11.54 C -56.01,12.05 -55.63,12.55 -55.24,13.02 C -54.84,13.50 -54.43,13.95 -54.00,14.39 C -53.57,14.82 -53.11,15.24 -52.65,15.63 C -52.19,16.03 -51.71,16.40 -51.22,16.75 C -50.73,17.10 -50.23,17.43 -49.72,17.74 C -49.21,18.05 -48.68,18.34 -48.15,18.60 C -47.63,18.87 -47.09,19.11 -46.55,19.34 C -46.00,19.56 -45.46,19.76 -44.90,19.94 C -44.35,20.12 -43.80,20.28 -43.24,20.42 C -42.69,20.56 -42.13,20.68 -41.57,20.78 C -41.01,20.89 -40.45,20.97 -39.89,21.03 C -39.34,21.10 -38.78,21.14 -38.23,21.17 C -37.67,21.20 -37.12,21.22 -36.57,21.21 C -36.02,21.21 -35.47,21.19 -34.93,21.16 C -34.39,21.12 -33.85,21.07 -33.32,21.01 C -32.79,20.95 -32.26,20.87 -31.74,20.78 C -31.21,20.69 -30.69,20.59 -30.18,20.48 C -29.67,20.36 -29.16,20.24 -28.66,20.10 C -28.16,19.97 -27.66,19.82 -27.17,19.67 C -26.68,19.51 -26.20,19.34 -25.72,19.17 C -25.24,18.99 -24.77,18.81 -24.30,18.62 C -23.84,18.43 -23.38,18.23 -22.92,18.02 C -22.47,17.81 -22.02,17.60 -21.58,17.38 C -21.14,17.16 -20.70,16.93 -20.27,16.70 C -19.84,16.46 -19.42,16.22 -19.00,15.98 C -18.58,15.74 -18.16,15.49 -17.75,15.23 C -17.34,14.98 -16.94,14.72 -16.54,14.45 C -16.14,14.19 -15.75,13.92 -15.36,13.65 C -14.97,13.38 -14.59,13.11 -14.21,12.83 C -13.83,12.55 -13.45,12.27 -13.08,11.98 C -12.71,11.70 -12.34,11.41 -11.98,11.12 C -11.61,10.83 -11.25,10.54 -10.90,10.24 C -10.54,9.95 -10.19,9.65 -9.84,9.35 C -9.49,9.05 -9.14,8.75 -8.80,8.44 C -8.46,8.14 -8.12,7.84 -7.78,7.53 C -7.44,7.22 -7.11,6.92 -6.77,6.61 C -6.44,6.30 -6.11,5.99 -5.78,5.68 C -5.45,5.37 -5.13,5.05 -4.80,4.74 C -4.47,4.43 -4.15,4.11 -3.83,3.80 C -3.51,3.48 -3.18,3.17 -2.86,2.85 C -2.54,2.54 -2.23,2.22 -1.91,1.90 C -1.59,1.59 -1.27,1.27 -0.95,0.95 C -0.63,0.63 -0.16,0.16 -0.00,0.00"></path>
+      <path class="mark-half" d="M 0.00,-0.00 C 0.16,-0.16 0.63,-0.63 0.95,-0.95 C 1.27,-1.27 1.59,-1.59 1.91,-1.90 C 2.23,-2.22 2.54,-2.54 2.86,-2.85 C 3.18,-3.17 3.51,-3.48 3.83,-3.80 C 4.15,-4.11 4.47,-4.43 4.80,-4.74 C 5.13,-5.05 5.45,-5.37 5.78,-5.68 C 6.11,-5.99 6.44,-6.30 6.77,-6.61 C 7.11,-6.92 7.44,-7.22 7.78,-7.53 C 8.12,-7.84 8.46,-8.14 8.80,-8.44 C 9.14,-8.75 9.49,-9.05 9.84,-9.35 C 10.19,-9.65 10.54,-9.95 10.90,-10.24 C 11.25,-10.54 11.61,-10.83 11.98,-11.12 C 12.34,-11.41 12.71,-11.70 13.08,-11.98 C 13.45,-12.27 13.83,-12.55 14.21,-12.83 C 14.59,-13.11 14.97,-13.38 15.36,-13.65 C 15.75,-13.92 16.14,-14.19 16.54,-14.45 C 16.94,-14.72 17.34,-14.98 17.75,-15.23 C 18.16,-15.49 18.58,-15.74 19.00,-15.98 C 19.42,-16.22 19.84,-16.46 20.27,-16.70 C 20.70,-16.93 21.14,-17.16 21.58,-17.38 C 22.02,-17.60 22.47,-17.81 22.92,-18.02 C 23.38,-18.23 23.84,-18.43 24.30,-18.62 C 24.77,-18.81 25.24,-18.99 25.72,-19.17 C 26.20,-19.34 26.68,-19.51 27.17,-19.67 C 27.66,-19.82 28.16,-19.97 28.66,-20.10 C 29.16,-20.24 29.67,-20.36 30.18,-20.48 C 30.69,-20.59 31.21,-20.69 31.74,-20.78 C 32.26,-20.87 32.79,-20.95 33.32,-21.01 C 33.85,-21.07 34.39,-21.12 34.93,-21.16 C 35.47,-21.19 36.02,-21.21 36.57,-21.21 C 37.12,-21.22 37.67,-21.20 38.23,-21.17 C 38.78,-21.14 39.34,-21.10 39.89,-21.03 C 40.45,-20.97 41.01,-20.89 41.57,-20.78 C 42.13,-20.68 42.69,-20.56 43.24,-20.42 C 43.80,-20.28 44.35,-20.12 44.90,-19.94 C 45.46,-19.76 46.00,-19.56 46.55,-19.34 C 47.09,-19.11 47.63,-18.87 48.15,-18.60 C 48.68,-18.34 49.21,-18.05 49.72,-17.74 C 50.23,-17.43 50.73,-17.10 51.22,-16.75 C 51.71,-16.40 52.19,-16.03 52.65,-15.63 C 53.11,-15.24 53.57,-14.82 54.00,-14.39 C 54.43,-13.95 54.84,-13.50 55.24,-13.02 C 55.63,-12.55 56.01,-12.05 56.36,-11.54 C 56.72,-11.03 57.05,-10.50 57.36,-9.96 C 57.67,-9.42 57.95,-8.86 58.21,-8.28 C 58.47,-7.71 58.70,-7.12 58.91,-6.53 C 59.11,-5.93 59.29,-5.32 59.44,-4.71 C 59.59,-4.10 59.71,-3.47 59.80,-2.85 C 59.89,-2.22 59.95,-1.58 59.98,-0.95 C 60.01,-0.32 60.01,0.32 59.98,0.95 C 59.95,1.58 59.89,2.22 59.80,2.85 C 59.71,3.47 59.59,4.10 59.44,4.71 C 59.29,5.32 59.11,5.93 58.91,6.53 C 58.70,7.12 58.47,7.71 58.21,8.28 C 57.95,8.86 57.67,9.42 57.36,9.96 C 57.05,10.50 56.72,11.03 56.36,11.54 C 56.01,12.05 55.63,12.55 55.24,13.02 C 54.84,13.50 54.43,13.95 54.00,14.39 C 53.57,14.82 53.11,15.24 52.65,15.63 C 52.19,16.03 51.71,16.40 51.22,16.75 C 50.73,17.10 50.23,17.43 49.72,17.74 C 49.21,18.05 48.68,18.34 48.15,18.60 C 47.63,18.87 47.09,19.11 46.55,19.34 C 46.00,19.56 45.46,19.76 44.90,19.94 C 44.35,20.12 43.80,20.28 43.24,20.42 C 42.69,20.56 42.13,20.68 41.57,20.78 C 41.01,20.89 40.45,20.97 39.89,21.03 C 39.34,21.10 38.78,21.14 38.23,21.17 C 37.67,21.20 37.12,21.22 36.57,21.21 C 36.02,21.21 35.47,21.19 34.93,21.16 C 34.39,21.12 33.85,21.07 33.32,21.01 C 32.79,20.95 32.26,20.87 31.74,20.78 C 31.21,20.69 30.69,20.59 30.18,20.48 C 29.67,20.36 29.16,20.24 28.66,20.10 C 28.16,19.97 27.66,19.82 27.17,19.67 C 26.68,19.51 26.20,19.34 25.72,19.17 C 25.24,18.99 24.77,18.81 24.30,18.62 C 23.84,18.43 23.38,18.23 22.92,18.02 C 22.47,17.81 22.02,17.60 21.58,17.38 C 21.14,17.16 20.70,16.93 20.27,16.70 C 19.84,16.46 19.42,16.22 19.00,15.98 C 18.58,15.74 18.16,15.49 17.75,15.23 C 17.34,14.98 16.94,14.72 16.54,14.45 C 16.14,14.19 15.75,13.92 15.36,13.65 C 14.97,13.38 14.59,13.11 14.21,12.83 C 13.83,12.55 13.45,12.27 13.08,11.98 C 12.71,11.70 12.34,11.41 11.98,11.12 C 11.61,10.83 11.25,10.54 10.90,10.24 C 10.54,9.95 10.19,9.65 9.84,9.35 C 9.49,9.05 9.14,8.75 8.80,8.44 C 8.46,8.14 8.12,7.84 7.78,7.53 C 7.44,7.22 7.11,6.92 6.77,6.61 C 6.44,6.30 6.11,5.99 5.78,5.68 C 5.45,5.37 5.13,5.05 4.80,4.74 C 4.47,4.43 4.15,4.11 3.83,3.80 C 3.51,3.48 3.18,3.17 2.86,2.85 C 2.54,2.54 2.23,2.22 1.91,1.90 C 1.59,1.59 1.27,1.27 0.95,0.95 C 0.63,0.63 0.16,0.16 0.00,0.00"></path>
+    </svg>
+    <span class="wordmark-text">Andrea Harter</span>
+  </a>
   <nav class="site-nav" aria-label="Primary">
     <ul>
       <li><a href="#work">Work</a></li>
@@ -992,24 +969,13 @@
 
 <main id="main">
   <section class="hero" id="top" aria-label="Introduction">
-    <div class="hero-shapes" aria-hidden="true">
-      <span class="blob blob-1"></span>
-      <span class="blob blob-2"></span>
-      <span class="blob blob-3"></span>
-      <span class="blob blob-4"></span>
-    </div>
-
-    <div class="hero-scrim" aria-hidden="true"></div>
-
     <div class="hero-copy">
       <p class="eyebrow">Senior UX Designer, based in St. Louis</p>
-      <h1 class="hero-title">Hi, I'm Andrea.</h1>
+      <h1 class="hero-title">I turn fragmented problems into systems people, and AI, can act on.</h1>
       <p class="hero-sub">
         By day I design for complex enterprise software, the kind with a
-        hundred edge cases and no clean answer, untangling systems that got complicated
-        one reasonable decision at a time. <strong>Seven-plus years into UX</strong>, after an
-        earlier life in footwear design and marketing, and I still like that kind of
-        problem best.
+        hundred edge cases and no clean answer. After an earlier life in
+        footwear design and marketing, I still like that kind of problem best.
       </p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="#work">See the work</a>
