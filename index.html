@@ -1015,6 +1015,105 @@
     color: var(--ink-soft);
     opacity: 0.7;
   }
+
+  /* ---------- Mobile nav (2026-09-13) ---------- */
+  .nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .nav-toggle:hover,
+  .nav-toggle:focus-visible {
+    color: var(--ink);
+    border-color: var(--ink-soft);
+  }
+  .nav-toggle-icon { display: none; }
+  .nav-toggle .icon-menu { display: block; }
+  .nav-toggle[aria-expanded="true"] .icon-menu { display: none; }
+  .nav-toggle[aria-expanded="true"] .icon-close { display: block; }
+
+  .nav-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.32);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 40;
+  }
+  .nav-scrim.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  html.nav-open-lock {
+    overflow: hidden;
+  }
+
+  @media (max-width: 640px) {
+    /* Wordmark: no room (or hover) for the AH -> Andrea Harter expand, so
+       show the full name plainly and skip the animation entirely. */
+    .wordmark-text span.fade {
+      opacity: 1;
+      max-width: 8em;
+      transition: none;
+    }
+    .wordmark-text {
+      font-size: 1.1rem;
+    }
+
+    /* Nav links move into a slide-out panel opened by the hamburger button. */
+    .nav-toggle {
+      display: inline-flex;
+    }
+    /* Keep the header above the slide-out panel/scrim, and the toggle button
+       above the panel itself, so it still shows as an X and stays tappable
+       while the menu is open. */
+    header.site-head {
+      z-index: 60;
+    }
+    .nav-toggle {
+      position: relative;
+      z-index: 60;
+    }
+    nav.site-nav {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: min(78vw, 320px);
+      background: var(--canvas);
+      border-left: 1px solid var(--line);
+      box-shadow: -16px 0 40px rgba(0, 0, 0, 0.12);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(.2,.8,.2,1);
+      z-index: 50;
+      padding: 6rem 2rem 2rem;
+      box-sizing: border-box;
+    }
+    nav.site-nav.is-open {
+      transform: translateX(0);
+    }
+    nav.site-nav ul {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.75rem;
+      font-size: 1.05rem;
+    }
+
+    /* Meta line under the hero reads too small on a phone. */
+    .meta-line {
+      font-size: 0.9rem;
+    }
+  }
 </style>
 
 <a class="skip-link" href="#main">Skip to main content</a>
@@ -1027,7 +1126,7 @@
     <span class="wordmark-text"><span>A</span><span class="fade">ndrea </span><span>H</span><span class="fade">arter</span></span>
   </a>
   <div class="nav-wrap">
-    <nav class="site-nav" aria-label="Primary">
+    <nav class="site-nav" aria-label="Primary" id="siteNav">
       <ul>
         <li><a href="#work">Work</a></li>
         <li><a href="#lab">Lab</a></li>
@@ -1044,8 +1143,17 @@
         <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
       </svg>
     </button>
+    <button type="button" class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="siteNav">
+      <svg class="nav-toggle-icon icon-menu" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <svg class="nav-toggle-icon icon-close" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
 </header>
+<div class="nav-scrim" id="navScrim" aria-hidden="true"></div>
 
 <main id="main">
   <section class="hero" id="top" aria-label="Introduction">
@@ -1465,6 +1573,32 @@
       document.documentElement.setAttribute('data-theme', next);
       try { localStorage.setItem('theme', next); } catch (e) {}
       reflect(next);
+    });
+  })();
+
+  (function () {
+    var navToggle = document.getElementById('navToggle');
+    var siteNav = document.getElementById('siteNav');
+    var scrim = document.getElementById('navScrim');
+    if (!navToggle || !siteNav || !scrim) return;
+
+    function setOpen(open) {
+      siteNav.classList.toggle('is-open', open);
+      scrim.classList.toggle('is-open', open);
+      navToggle.setAttribute('aria-expanded', String(open));
+      navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      document.documentElement.classList.toggle('nav-open-lock', open);
+    }
+
+    navToggle.addEventListener('click', function () {
+      setOpen(!siteNav.classList.contains('is-open'));
+    });
+    scrim.addEventListener('click', function () { setOpen(false); });
+    siteNav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () { setOpen(false); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setOpen(false);
     });
   })();
 
